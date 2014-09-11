@@ -11,6 +11,7 @@ using UniKinect;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 using System.Threading;
+using UniKinect.Nui;
 
 
 namespace SampleForm
@@ -53,8 +54,8 @@ namespace SampleForm
                 }
             }
 
-            Nui.NuiSkeletonTrackingState tracking;
-            public Nui.NuiSkeletonTrackingState Tracking
+            NuiSkeletonTrackingState tracking;
+            public NuiSkeletonTrackingState Tracking
             {
                 get { return tracking; }
                 set
@@ -189,7 +190,7 @@ namespace SampleForm
             {
                 _skeletons[i++].Tracking=skeleton.eTrackingState;
 
-                if (skeleton.eTrackingState == Nui.NuiSkeletonTrackingState.SkeletonTracked)
+                if (skeleton.eTrackingState == NuiSkeletonTrackingState.SkeletonTracked)
                 {
                     listBox1.DataSource = skeleton.SkeletonPositions.ToList();
                 }

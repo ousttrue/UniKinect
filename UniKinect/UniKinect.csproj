@@ -39,13 +39,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KinectBaseStream.cs" />
-    <Compile Include="KinectImageFrame.cs" />
-    <Compile Include="KinectImageStream.cs" />
-    <Compile Include="KinectSensor.cs" />
-    <Compile Include="KinectSkeletonFrame.cs" />
-    <Compile Include="KinectSkeletonStream.cs" />
-    <Compile Include="Nui.cs" />
+    <Compile Include="Nui\KinectBaseStream.cs" />
+    <Compile Include="Nui\KinectImageFrame.cs" />
+    <Compile Include="Nui\KinectImageStream.cs" />
+    <Compile Include="Nui\KinectSensor.cs" />
+    <Compile Include="Nui\KinectSkeletonFrame.cs" />
+    <Compile Include="Nui\KinectSkeletonStream.cs" />
+    <Compile Include="Nui\Import.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

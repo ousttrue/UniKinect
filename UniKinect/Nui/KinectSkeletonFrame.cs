@@ -1,5 +1,5 @@
 ﻿
-namespace UniKinect
+namespace UniKinect.Nui
 {
     public class KinectSkeletonFrame
     {
@@ -7,7 +7,7 @@ namespace UniKinect
 
         public KinectSkeletonFrame()
         {
-            Nui.NuiSkeletonGetNextFrame(0, ref Frame);
+            Nui.Import.NuiSkeletonGetNextFrame(0, ref Frame);
         }
     }
 }

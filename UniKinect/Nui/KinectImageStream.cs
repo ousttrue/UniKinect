@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 
 
-namespace UniKinect
+namespace UniKinect.Nui
 {
     public class KinectImageStream : KinectBaseStream
     {
@@ -11,7 +11,7 @@ namespace UniKinect
 
         public KinectImageStream(Nui.NuiImageType type, Nui.NuiImageResolution resolution, IntPtr waitHandle)
         {
-            Nui.NuiImageStreamOpen(type, resolution
+            Nui.Import.NuiImageStreamOpen(type, resolution
                 , 0, 2, waitHandle, out _phStreamHandle);
 
             _initialized = true;

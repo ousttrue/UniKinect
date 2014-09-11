@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace UniKinect
+namespace UniKinect.Nui
 {
     public class KInectImageFrame : IDisposable
     {
@@ -22,7 +22,7 @@ namespace UniKinect
         public KInectImageFrame(IntPtr phStreamHandle)
         {
             _phStreamHandle = phStreamHandle;
-            Nui.NuiImageStreamGetNextFrame(_phStreamHandle, 0, out _imageFramePtr);
+            Nui.Import.NuiImageStreamGetNextFrame(_phStreamHandle, 0, out _imageFramePtr);
             if (_imageFramePtr == IntPtr.Zero)
             {
                 return;
@@ -55,7 +55,7 @@ namespace UniKinect
                 if (_initialized)
                 {
                     // Free any other managed objects here.
-                    Nui.NuiImageStreamReleaseFrame(_phStreamHandle, _imageFramePtr);
+                    Nui.Import.NuiImageStreamReleaseFrame(_phStreamHandle, _imageFramePtr);
                 }
             }
 

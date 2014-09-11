@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace UniKinect
+namespace UniKinect.Nui
 {
     public class KinectSensor : IDisposable
     {
@@ -10,14 +10,14 @@ namespace UniKinect
 
         public KinectSensor()
         {
-            Nui.NuiInitialize(Nui.NuiInitializeFlags.UsesColor
+            Nui.Import.NuiInitialize(Nui.NuiInitializeFlags.UsesColor
                 | Nui.NuiInitializeFlags.UsesDepthAndPlayerIndex
                 | Nui.NuiInitializeFlags.UsesSkeleton);
 
             _initialized = true;
 
             Int32 angle;
-            Nui.NuiCameraElevationGetAngle(out angle);
+            Nui.Import.NuiCameraElevationGetAngle(out angle);
             _angle = angle;
         }
 
@@ -44,7 +44,7 @@ namespace UniKinect
                 if (_initialized)
                 {
                     // Free any other managed objects here.
-                    Nui.NuiShutdown();
+                    Nui.Import.NuiShutdown();
                 }
             }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UniKinect
+namespace UniKinect.Nui
 {
     public abstract class KinectBaseStream: IDisposable
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace UniKinect
+namespace UniKinect.Nui
 {
     public class KinectSkeletonStream: KinectBaseStream
     {
@@ -10,7 +10,7 @@ namespace UniKinect
 
         public KinectSkeletonStream(IntPtr waitHandle)
         {
-            Nui.NuiSkeletonTrackingEnable(waitHandle, Nui.NuiSkeletonFlags.None);
+            Nui.Import.NuiSkeletonTrackingEnable(waitHandle, Nui.NuiSkeletonFlags.None);
 
             SmoothingParams.fSmoothing = 1.0f;
             SmoothingParams.fCorrection = 0.5f;
@@ -37,7 +37,7 @@ namespace UniKinect
             }
 
             // smoothing
-            Nui.NuiTransformSmooth(ref frame.Frame, ref SmoothingParams);
+            Nui.Import.NuiTransformSmooth(ref frame.Frame, ref SmoothingParams);
 
             return frame;
         }
