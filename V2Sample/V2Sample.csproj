@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{12BCBF28-93D2-4F5E-B489-116A518A9EB8}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{9C82BD16-7E18-40F5-80E6-961F5D184C6C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UniKinect</RootNamespace>
-    <AssemblyName>UniKinect</AssemblyName>
+    <RootNamespace>V2Sample</RootNamespace>
+    <AssemblyName>V2Sample</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -39,15 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Nui\KinectBaseStream.cs" />
-    <Compile Include="Nui\KinectImageFrame.cs" />
-    <Compile Include="Nui\KinectImageStream.cs" />
-    <Compile Include="Nui\KinectSensor.cs" />
-    <Compile Include="Nui\KinectSkeletonFrame.cs" />
-    <Compile Include="Nui\KinectSkeletonStream.cs" />
-    <Compile Include="Nui\Import.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="V2\Import.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UniKinect\UniKinect.csproj">
+      <Project>{12bcbf28-93d2-4f5e-b489-116a518a9eb8}</Project>
+      <Name>UniKinect</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
