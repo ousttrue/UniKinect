@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using UniKinect.V2;
+using UniKinect.V2PublicPreview;
 
 
 namespace V2Sample

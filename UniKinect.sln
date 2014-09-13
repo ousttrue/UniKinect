@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Windows Desktop
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleForm", "SampleForm\SampleForm.csproj", "{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniKinect", "UniKinect\UniKinect.csproj", "{12BCBF28-93D2-4F5E-B489-116A518A9EB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V2Sample", "V2Sample\V2Sample.csproj", "{9C82BD16-7E18-40F5-80E6-961F5D184C6C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V2SampleForm", "V2SampleForm\V2SampleForm.csproj", "{5D273F9F-E074-4EF6-8403-3963A90ACDBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuiSampleForm", "NuiSampleForm\NuiSampleForm.csproj", "{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{12BCBF28-93D2-4F5E-B489-116A518A9EB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{12BCBF28-93D2-4F5E-B489-116A518A9EB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12BCBF28-93D2-4F5E-B489-116A518A9EB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{5D273F9F-E074-4EF6-8403-3963A90ACDBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D273F9F-E074-4EF6-8403-3963A90ACDBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D273F9F-E074-4EF6-8403-3963A90ACDBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF7E6509-2E4A-4999-A142-C2CE245CCFF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

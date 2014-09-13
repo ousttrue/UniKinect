@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UniKinect.V2
+namespace UniKinect.V2PublicPreview
 {
     // to marshal the data from NuiImageFrame to this struct
     // reference: http://msdn.microsoft.com/en-us/library/microsoft.kinect.kinect.ikinectsensor.aspx
