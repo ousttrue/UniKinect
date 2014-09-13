@@ -13,14 +13,14 @@ namespace V2Sample
     {
         static void Main(string[] args)
         {
-            var sensor =Import.GetDefaultKinectSensor();
+            var sensor=Import.GetDefaultKinectSensor();
             sensor.Open();
-            if (!sensor.get_IsOpen())
-            {
+            if (!sensor.get_IsOpen()) { 
                 return;
             }
-            var source=sensor.get_ColorFrameSource();
-            var reader=source.OpenReader();
+
+            var source = sensor.get_ColorFrameSource();
+            var reader = source.OpenReader();
 
             Console.WriteLine(reader);
         }
