@@ -18,7 +18,7 @@ namespace SampleForm
 {
     public partial class Form1 : Form
     {
-        Font _font;
+        Font _font = new Font("ＭＳ ゴシック", 12);
 
         KinectSensor _sensor;
 
@@ -113,7 +113,6 @@ namespace SampleForm
             _depthStream = KinectImageStream.CreateDepthSteram(_depthWaitHandle.Handle);
             _skeletonStream = new KinectSkeletonStream(_skeletonWaitHandle.Handle);
 
-            _font = new Font("ＭＳ ゴシック", 12);
             WaitUpdate(new WaitHandle[] { 
                 _imageWaitHandle
                 , _depthWaitHandle 
@@ -215,6 +214,7 @@ namespace SampleForm
                     }
                     var converted = converter(frame);
 
+                    // draw fps
                     Graphics g = Graphics.FromImage(converted);
                     RectangleF rect = new RectangleF(0, 0, 200, 60);
                     g.DrawString(String.Format("{0}", src.FPS), _font, Brushes.Yellow, rect);

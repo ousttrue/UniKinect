@@ -9,7 +9,7 @@ namespace UniKinect.Nui
         Boolean _initialized;
         IntPtr _phStreamHandle;
 
-        public KinectImageStream(Nui.NuiImageType type, Nui.NuiImageResolution resolution, IntPtr waitHandle)
+        public KinectImageStream(Nui.NuiImageType type, Nui.NuiImageResolution resolution, IntPtr waitHandle):base(1000)
         {
             Nui.Import.NuiImageStreamOpen(type, resolution
                 , 0, 2, waitHandle, out _phStreamHandle);

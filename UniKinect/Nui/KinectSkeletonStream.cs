@@ -8,7 +8,7 @@ namespace UniKinect.Nui
         Boolean _initialized;
         public Nui.NuiTransformSmoothParameters SmoothingParams;
 
-        public KinectSkeletonStream(IntPtr waitHandle)
+        public KinectSkeletonStream(IntPtr waitHandle):base(1000)
         {
             Nui.Import.NuiSkeletonTrackingEnable(waitHandle, Nui.NuiSkeletonFlags.None);
 

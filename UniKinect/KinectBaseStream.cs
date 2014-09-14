@@ -1,9 +1,15 @@
 ﻿using System;
 
-namespace UniKinect.Nui
+namespace UniKinect
 {
     public abstract class KinectBaseStream: IDisposable
     {
+        Int64 _timeStampForSecond;
+        protected KinectBaseStream(Int64 timeStampForSecond)
+        {
+            _timeStampForSecond = timeStampForSecond;
+        }
+
         protected abstract void OnDispose();
 
         // Flag: Has Dispose already been called?
@@ -52,6 +58,11 @@ namespace UniKinect.Nui
             private set;
         }
 
+        protected Boolean AdvanceTimeStamp(Int64 delta)
+        {
+            return NewTimeStamp(TimeStamp + delta);
+        }
+
         protected Boolean NewTimeStamp(Int64 timeStamp)
         {
             var d = timeStamp - TimeStamp;
@@ -64,7 +75,7 @@ namespace UniKinect.Nui
             _frameCount++;
             DeltaTime = DeltaTime + d;
 
-            if (DeltaTime >= 1000)
+            if (DeltaTime >= _timeStampForSecond)
             {
                 FPS = _frameCount;
                 _frameCount = 0;

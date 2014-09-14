@@ -181,11 +181,11 @@ namespace UniKinect.V2PublicPreview
             , [MarshalAs(UnmanagedType.LPArray)]Byte[] frameData);
         
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void AccessRawUnderlyingBuffer(out Int32 capacity, out IntPtr buffer);
+        IntPtr AccessRawUnderlyingBuffer(out Int32 capacity);
         
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void CopyConvertedFrameDataToArray(Int32 capacity
-            , [MarshalAs(UnmanagedType.LPArray)]Byte[] frameData
+            , IntPtr frameData
             , ColorImageFormat colorFormat);
         
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

@@ -39,7 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Nui\KinectBaseStream.cs" />
+    <Compile Include="KinectBaseStream.cs" />
     <Compile Include="Nui\KinectImageFrame.cs" />
     <Compile Include="Nui\KinectImageStream.cs" />
     <Compile Include="Nui\KinectSensor.cs" />
@@ -48,6 +48,7 @@
     <Compile Include="Nui\Import.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="V2PublicPreview\Import.cs" />
+    <Compile Include="V2PublicPreview\V2ImageStream.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

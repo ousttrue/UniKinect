@@ -14,8 +14,11 @@ namespace V2SampleForm
 {
     public partial class Form1 : Form
     {
+        Font _font = new Font("ＭＳ ゴシック", 12);
+
         IKinectSensor m_sensor;
-        IColorFrameReader m_reader;
+
+        V2ImageStream m_imageStream;
 
         public Form1()
         {
@@ -28,66 +31,52 @@ namespace V2SampleForm
                 return;
             }
 
-            var source = m_sensor.get_ColorFrameSource();
-            m_reader = source.OpenReader();
+            m_imageStream = new V2ImageStream(m_sensor);
 
             timer1.Tick+=OnTick;
             timer1.Interval = 100;
             timer1.Start();
         }
 
-        Byte[] m_buffer;
+
+        Bitmap m_bitmap;
+        Bitmap Convert(V2ImageFrame frame)
+        {
+            if (frame.Format == ColorImageFormat.ColorImageFormat_Bgra)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                if (m_bitmap == null)
+                {
+                    m_bitmap = new Bitmap(frame.Width, frame.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                }
+                var data=m_bitmap.LockBits(new Rectangle(0, 0, m_bitmap.Width, m_bitmap.Height)
+                    , System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                frame.CopyConvertedFrameDataToArray(data.Stride * data.Height, data.Scan0);
+                m_bitmap.UnlockBits(data);
+                return m_bitmap;
+            }
+
+        }
 
         void OnTick(Object o, EventArgs e)
         {
-            try
+            using (var frame = m_imageStream.GetFrame())
             {
-                var frame = m_reader.AcquireLatestFrame();
-                var descripton = frame.get_FrameDescription();
-                var time = frame.get_RelativeTime();
-                var width = descripton.get_Width();
-                var height = descripton.get_Height();
-                var imageFormat = frame.get_RawColorImageFormat();
-
-                if (imageFormat == ColorImageFormat.ColorImageFormat_Bgra)
+                if (frame == null)
                 {
-                    Int32 nBufferSize;
-                    IntPtr pBuffer = IntPtr.Zero;
-                    frame.AccessRawUnderlyingBuffer(out nBufferSize, out pBuffer);
+                    return;
                 }
-                else
-                {
-                    if (m_buffer == null)
-                    {
-                        var bytesPerPixel=descripton.get_BytesPerPixel();
-                        m_buffer = new Byte[width * height * 4];
-                    }
-                    frame.CopyConvertedFrameDataToArray(m_buffer.Length, m_buffer, ColorImageFormat.ColorImageFormat_Bgra);
+                var bitmap = Convert(frame);
 
-                    var gch=GCHandle.Alloc(m_buffer, GCHandleType.Pinned);
-
-                    var bitmap=new Bitmap(width, height, width*4, System.Drawing.Imaging.PixelFormat.Format32bppRgb, gch.AddrOfPinnedObject());
-                    pictureBox1.Image = bitmap;
-
-                    gch.Free();
-                }
-
-                Marshal.ReleaseComObject(descripton);
-                Marshal.ReleaseComObject(frame);
-            }
-            catch (COMException ex)
-            {
-                if ((UInt32)ex.HResult == 0x8000000A)
-                {
-
-                }
-                else
-                {
-                    Console.WriteLine(ex);
-                }
-            }
-            finally
-            {
+                // draw fps
+                Graphics g = Graphics.FromImage(bitmap);
+                RectangleF rect = new RectangleF(0, 0, 200, 60);
+                g.DrawString(String.Format("{0}", m_imageStream.FPS), _font, Brushes.Yellow, rect)
+                    ;
+                pictureBox1.Image = bitmap;
             }
         }
     }
