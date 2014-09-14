@@ -21,19 +21,21 @@ namespace UniKinect.Nui
 
     public static partial class Import
     {
+        const String DllPath = @"C:\Windows\System32\Kinect10.dll";
+
         public static int SkeletonCount = 6;
         public static int SkeletonMaxTracked = 2;
 
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
+        [DllImport(DllPath, PreserveSig = false)]
         public static extern void NuiInitialize(NuiInitializeFlags dwFlags);
 
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = true)]
+        [DllImport(DllPath, PreserveSig = true)]
         public static extern void NuiShutdown();
 
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
-        public static extern void NuiCameraElevationGetAngle(out Int32 angle);
+        [DllImport(DllPath, PreserveSig = false)]
+        public static extern Int32 NuiCameraElevationGetAngle();
 
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
+        [DllImport(DllPath, PreserveSig = false)]
         public static extern void NuiCameraElevationSetAngle(Int32 angle);
     }
 
@@ -70,8 +72,8 @@ namespace UniKinect.Nui
         public uint dwFrameNumber;
         public NuiImageType eImageType;
         public NuiImageResolution eResolution;
-        //[MarshalAsAttribute(UnmanagedType.LPStruct)]
-        public IntPtr pFrameTexture;
+        [MarshalAs(UnmanagedType.Interface)]
+        public INuiFrameTexture pFrameTexture;
         public uint dwFrameFlags_NotUsed;
         public NuiImageViewArea ViewArea_NotUsed;
     }
@@ -82,7 +84,6 @@ namespace UniKinect.Nui
     {
         public int pitch;
         public int size;
-        //[MarshalAsAttribute(UnmanagedType.U8)] 
         public IntPtr pBits;
 
     }
@@ -104,18 +105,19 @@ namespace UniKinect.Nui
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [PreserveSig]
         int BufferLen();
+
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [PreserveSig]
         int Pitch();
+
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        [PreserveSig]
-        int LockRect(uint Level, ref NuiLockedRect pLockedRect, IntPtr pRect, uint Flags);
+        void LockRect(uint Level, ref NuiLockedRect pLockedRect, IntPtr pRect, uint Flags);
+
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        [PreserveSig]
-        int GetLevelDesc(uint Level, ref NuiSurfaceDesc pDesc);
+        void GetLevelDesc(uint Level, ref NuiSurfaceDesc pDesc);
+
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        [PreserveSig]
-        int UnlockRect(uint Level);
+        void UnlockRect(uint Level);
     }
 
     [Flags]
@@ -129,21 +131,21 @@ namespace UniKinect.Nui
 
     public static partial class Import
     {
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
+        [DllImport(DllPath, PreserveSig = false)]
         public static extern void NuiImageStreamOpen(
             NuiImageType eImageType, NuiImageResolution eResolution
             , uint dwImageFrameFlags_NotUsed, uint dwFrameLimit
             , IntPtr hNextFrameEvent, out IntPtr phStreamHandle);
 
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
-        public static extern void NuiImageStreamGetNextFrame(
-            IntPtr phStreamHandle, uint dwMillisecondsToWait, out IntPtr ppcImageFrame);
+        [DllImport(DllPath, PreserveSig = false)]
+        public static extern IntPtr NuiImageStreamGetNextFrame(
+            IntPtr phStreamHandle, uint dwMillisecondsToWait);
 
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
+        [DllImport(DllPath, PreserveSig = false)]
         public static extern void NuiImageStreamReleaseFrame(
             IntPtr phStreamHandle, IntPtr ppcImageFrame);
 
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
+        [DllImport(DllPath, PreserveSig = false)]
         public static extern void NuiImageStreamSetImageFrameFlags(
             IntPtr phStreamHandle, NuiImageStreamFlags dvImageFrameFlags);
     }
@@ -288,24 +290,20 @@ namespace UniKinect.Nui
 
     public static partial class Import
     {
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
+        [DllImport(DllPath, PreserveSig = false)]
         public static extern void NuiSkeletonTrackingEnable(IntPtr hNextFrameEvent, NuiSkeletonFlags dwFlags);
 
-
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
+        [DllImport(DllPath, PreserveSig = false)]
         public static extern void NuiSkeletonGetNextFrame(
             uint dwMillisecondsToWait, ref NuiSkeletonFrame pSkeletonFrame);
 
-
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
+        [DllImport(DllPath, PreserveSig = false)]
         public static extern void NuiTransformSmooth(
             ref NuiSkeletonFrame pSkeletonFrame, ref NuiTransformSmoothParameters pSmoothingParams);
 
-
-
-        [DllImport(@"C:\Windows\System32\Kinect10.dll", PreserveSig = false)]
-        public static extern void NuiSkeletonCalculateBoneOrientations(
-            ref NuiSkeletonData pSkeletonData, out NuiSkeletonBoneOrientation[] pBoneOrientations);
+        [DllImport(DllPath, PreserveSig = false)]
+        public static extern NuiSkeletonBoneOrientation[] NuiSkeletonCalculateBoneOrientations(
+            ref NuiSkeletonData pSkeletonData);
     }
 }
 

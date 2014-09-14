@@ -16,9 +16,7 @@ namespace UniKinect.Nui
 
             _initialized = true;
 
-            Int32 angle;
-            Nui.Import.NuiCameraElevationGetAngle(out angle);
-            _angle = angle;
+            _angle=Nui.Import.NuiCameraElevationGetAngle();
         }
 
         // Flag: Has Dispose already been called?
