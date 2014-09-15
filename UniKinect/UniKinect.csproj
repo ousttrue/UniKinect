@@ -48,6 +48,9 @@
     <Compile Include="Nui\Import.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="V2PublicPreview\Import.cs" />
+    <Compile Include="V2PublicPreview\V2DepthFrame.cs" />
+    <Compile Include="V2PublicPreview\V2DepthStream.cs" />
+    <Compile Include="V2PublicPreview\V2ImageFrame.cs" />
     <Compile Include="V2PublicPreview\V2ImageStream.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

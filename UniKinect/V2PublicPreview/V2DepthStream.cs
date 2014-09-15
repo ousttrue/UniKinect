@@ -1,23 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace UniKinect.V2PublicPreview
 {
-    public class V2ImageStream : KinectBaseStream
+    public class V2DepthStream : KinectBaseStream
     {
-        IColorFrameReader m_reader;
+        IDepthFrameReader m_reader;
 
-        public V2ImageStream(IKinectSensor sensor):base(10000000)
+        public V2DepthStream(IKinectSensor sensor)
+            : base(10000000)
         {
-            var source = sensor.get_ColorFrameSource();
+            var source = sensor.get_DepthFrameSource();
             m_reader = source.OpenReader();
         }
 
-        public V2ImageFrame GetFrame()
+        public V2DepthFrame GetFrame()
         {
             try
             {
-                var frame = new V2ImageFrame(m_reader.AcquireLatestFrame());
+                var frame = new V2DepthFrame(m_reader.AcquireLatestFrame());
                 if (!NewTimeStamp(frame.Time))
                 {
                     return null;
