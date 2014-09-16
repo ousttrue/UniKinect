@@ -47,12 +47,11 @@ namespace UniKinect.V2PublicPreview
         [return: MarshalAs(UnmanagedType.Interface)]
         IDepthFrameSource get_DepthFrameSource();
 
-#if false
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_BodyFrameSource( 
-            /* [annotation][out][retval] */ 
-            _COM_Outptr_  IBodyFrameSource **bodyFrameSource) = 0;
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IBodyFrameSource get_BodyFrameSource();
         
+#if false
         virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_BodyIndexFrameSource( 
             /* [annotation][out][retval] */ 
             _COM_Outptr_  IBodyIndexFrameSource **bodyIndexFrameSource) = 0;
@@ -415,6 +414,7 @@ namespace UniKinect.V2PublicPreview
         void OverrideAndReplaceHandTracking(UInt64 oldTrackingId, UInt64 newTrackingId);
     };
 
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport, Guid("45532DF5-A63C-418F-A39F-C567936BC051")]
     public interface IBodyFrameReader
     {
@@ -444,6 +444,7 @@ namespace UniKinect.V2PublicPreview
         IBodyFrameSource get_BodyFrameSource();
     };
 
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport, Guid("BF5CCA0E-00C1-4D48-837F-AB921E6AEE01")]
     public interface IBodyFrameArrivedEventArgs
     {
@@ -452,6 +453,7 @@ namespace UniKinect.V2PublicPreview
         IBodyFrameReference get_FrameReference();
     };
 
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport, Guid("C3A1733C-5F84-443B-9659-2F2BE250C97D")]
     public interface IBodyFrameReference
     {
@@ -471,11 +473,29 @@ namespace UniKinect.V2PublicPreview
         public Single w;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Bodies
+    {
+        [MarshalAs(UnmanagedType.Interface)]
+        public IBody _0;
+        [MarshalAs(UnmanagedType.Interface)]
+        public IBody _1;
+        [MarshalAs(UnmanagedType.Interface)]
+        public IBody _2;
+        [MarshalAs(UnmanagedType.Interface)]
+        public IBody _3;
+        [MarshalAs(UnmanagedType.Interface)]
+        public IBody _4;
+        [MarshalAs(UnmanagedType.Interface)]
+        public IBody _5;
+    }
+
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport, Guid("52884F1F-94D7-4B57-BF87-9226950980D5")]
     public interface IBodyFrame
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetAndRefreshBodyData(UInt32 capacity, [MarshalAs(UnmanagedType.Interface)]ref IBody bodies);
+        void GetAndRefreshBodyData(UInt32 capacity, ref Bodies bodies);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         Vector4 get_FloorClipPlane();
@@ -574,6 +594,7 @@ namespace UniKinect.V2PublicPreview
         public float Y;
     }
 
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport, Guid("46AEF731-98B0-4D18-827B-933758678F4A")]
     public interface IBody
     {
@@ -631,6 +652,7 @@ namespace UniKinect.V2PublicPreview
     public static partial class Import
     {
         const String DllPath = @"C:\Windows\System32\Kinect20.dll";
+        public const Int32 BodyCount = 6;
 
         [DllImport(DllPath, PreserveSig = false, CallingConvention = CallingConvention.Winapi)]
         [return: MarshalAs(UnmanagedType.Interface)]

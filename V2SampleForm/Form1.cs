@@ -16,6 +16,7 @@ namespace V2SampleForm
 
         //V2ImageStream m_imageStream;
         V2DepthStream m_depthStream;
+        V2BodyStream m_bodyStream;
 
         public Form1()
         {
@@ -30,6 +31,7 @@ namespace V2SampleForm
 
             //m_imageStream = new V2ImageStream(m_sensor);
             m_depthStream = new V2DepthStream(m_sensor);
+            m_bodyStream = new V2BodyStream(m_sensor);
 
             timer1.Tick+=OnTick;
             timer1.Interval = 100;
@@ -81,15 +83,18 @@ namespace V2SampleForm
             return m_bitmap;
         }
 
+        void UpdateBody(V2BodyFrame frame)
+        {
+            dataGridView1.DataSource = frame.Bodies;
+        }
+
         void OnTick(Object o, EventArgs e)
         {
             /*
             using (var frame = m_imageStream.GetFrame())
             {
-                if (frame == null)
+                if (frame != null)
                 {
-                    return;
-                }
                 var bitmap = Convert(frame);
 
                 // draw fps
@@ -98,22 +103,29 @@ namespace V2SampleForm
                 g.DrawString(String.Format("{0}", m_imageStream.FPS), _font, Brushes.Yellow, rect)
                     ;
                 pictureBox1.Image = bitmap;
+              }
             }
             */
             using (var frame = m_depthStream.GetFrame())
             {
-                if (frame == null)
+                if (frame != null)
                 {
-                    return;
-                }
-                var bitmap = Convert(frame);
+                    var bitmap = Convert(frame);
 
-                // draw fps
-                Graphics g = Graphics.FromImage(bitmap);
-                RectangleF rect = new RectangleF(0, 0, 200, 60);
-                g.DrawString(String.Format("{0}", m_depthStream.FPS), _font, Brushes.Yellow, rect)
-                    ;
-                pictureBox1.Image = bitmap;
+                    // draw fps
+                    Graphics g = Graphics.FromImage(bitmap);
+                    RectangleF rect = new RectangleF(0, 0, 200, 60);
+                    g.DrawString(String.Format("{0}", m_depthStream.FPS), _font, Brushes.Yellow, rect)
+                        ;
+                    pictureBox1.Image = bitmap;
+                }
+            }
+            using (var frame = m_bodyStream.GetFrame())
+            {
+                if (frame != null)
+                {
+                    UpdateBody(frame);
+                }
             }
         }
     }
