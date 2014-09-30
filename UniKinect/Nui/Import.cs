@@ -16,7 +16,8 @@ namespace UniKinect.Nui
         UsesDepthAndPlayerIndex = 0x00000001,
         UsesColor = 0x00000002,
         UsesSkeleton = 0x00000008,
-        UsesDepth = 0x00000020
+        UsesDepth = 0x00000020,
+        UsesHighQualityColor = 0x00000040,
     }
 
     public static partial class Import

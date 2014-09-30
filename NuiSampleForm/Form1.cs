@@ -157,27 +157,33 @@ namespace SampleForm
 
         void WaitUpdate(WaitHandle[] handles)
         {
-            var task = Task.Factory.StartNew(() =>
+            try
             {
-                var index = WaitHandle.WaitAny(handles);
-                switch (index)
+                var task = Task.Factory.StartNew(() =>
                 {
-                    case 0:
-                        UpdatePictureBox(_imageStream, ImageToBitmap, pictureBox1);
-                        break;
+                    var index = WaitHandle.WaitAny(handles);
+                    switch (index)
+                    {
+                        case 0:
+                            UpdatePictureBox(_imageStream, ImageToBitmap, pictureBox1);
+                            break;
 
-                    case 1:
-                        UpdatePictureBox(_depthStream, DepthToBitmap, pictureBox2);
-                        break;
+                        case 1:
+                            UpdatePictureBox(_depthStream, DepthToBitmap, pictureBox2);
+                            break;
 
-                    case 2:
-                        UpdateSkeleton(_skeletonStream);
-                        break;
-                }
+                        case 2:
+                            UpdateSkeleton(_skeletonStream);
+                            break;
+                    }
 
-                WaitUpdate(handles);
+                    WaitUpdate(handles);
 
-            });
+                });
+            }
+            catch (ObjectDisposedException)
+            {
+            }
         }
 
         delegate void SetSkeletonFrameDelegate(KinectSkeletonFrame frame);
