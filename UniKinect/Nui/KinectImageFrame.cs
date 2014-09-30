@@ -22,7 +22,7 @@ namespace UniKinect.Nui
         public KInectImageFrame(IntPtr phStreamHandle)
         {
             _phStreamHandle = phStreamHandle;
-            _imageFramePtr=Nui.Import.NuiImageStreamGetNextFrame(_phStreamHandle, 0);
+            Nui.Import.ThrowIfFailed(Nui.Import.NuiImageStreamGetNextFrame(_phStreamHandle, 0, out _imageFramePtr));
             if (_imageFramePtr == IntPtr.Zero)
             {
                 return;

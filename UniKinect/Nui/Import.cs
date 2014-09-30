@@ -23,21 +23,32 @@ namespace UniKinect.Nui
     public static partial class Import
     {
         const String DllPath = @"C:\Windows\System32\Kinect10.dll";
-
         public static int SkeletonCount = 6;
         public static int SkeletonMaxTracked = 2;
 
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern void NuiInitialize(NuiInitializeFlags dwFlags);
+        public static void ThrowIfFailed(Int32 hr)
+        {
+            if (hr == 0)
+            {
+                // S_OK;
+            }
+            else
+            {
+                throw new COMException("ComError", hr);
+            }
+        }
+
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiInitialize(NuiInitializeFlags dwFlags);
 
         [DllImport(DllPath, PreserveSig = true)]
         public static extern void NuiShutdown();
 
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern Int32 NuiCameraElevationGetAngle();
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiCameraElevationGetAngle(out Int32 angle);
 
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern void NuiCameraElevationSetAngle(Int32 angle);
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiCameraElevationSetAngle(Int32 angle);
     }
 
     public enum NuiImageType
@@ -132,22 +143,22 @@ namespace UniKinect.Nui
 
     public static partial class Import
     {
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern void NuiImageStreamOpen(
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiImageStreamOpen(
             NuiImageType eImageType, NuiImageResolution eResolution
             , uint dwImageFrameFlags_NotUsed, uint dwFrameLimit
             , IntPtr hNextFrameEvent, out IntPtr phStreamHandle);
 
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern IntPtr NuiImageStreamGetNextFrame(
-            IntPtr phStreamHandle, uint dwMillisecondsToWait);
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiImageStreamGetNextFrame(
+            IntPtr phStreamHandle, uint dwMillisecondsToWait, out IntPtr pFrame);
 
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern void NuiImageStreamReleaseFrame(
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiImageStreamReleaseFrame(
             IntPtr phStreamHandle, IntPtr ppcImageFrame);
 
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern void NuiImageStreamSetImageFrameFlags(
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiImageStreamSetImageFrameFlags(
             IntPtr phStreamHandle, NuiImageStreamFlags dvImageFrameFlags);
     }
 
@@ -291,21 +302,19 @@ namespace UniKinect.Nui
 
     public static partial class Import
     {
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern void NuiSkeletonTrackingEnable(IntPtr hNextFrameEvent, NuiSkeletonFlags dwFlags);
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiSkeletonTrackingEnable(IntPtr hNextFrameEvent, NuiSkeletonFlags dwFlags);
 
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern void NuiSkeletonGetNextFrame(
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiSkeletonGetNextFrame(
             uint dwMillisecondsToWait, ref NuiSkeletonFrame pSkeletonFrame);
 
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern void NuiTransformSmooth(
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiTransformSmooth(
             ref NuiSkeletonFrame pSkeletonFrame, ref NuiTransformSmoothParameters pSmoothingParams);
 
-        [DllImport(DllPath, PreserveSig = false)]
-        public static extern NuiSkeletonBoneOrientation[] NuiSkeletonCalculateBoneOrientations(
-            ref NuiSkeletonData pSkeletonData);
+        [DllImport(DllPath, PreserveSig = true)]
+        public static extern Int32 NuiSkeletonCalculateBoneOrientations(
+            ref NuiSkeletonData pSkeletonData, out NuiSkeletonBoneOrientation[] orientations);
     }
 }
-
-    
