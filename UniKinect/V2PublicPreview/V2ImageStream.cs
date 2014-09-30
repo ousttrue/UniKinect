@@ -26,7 +26,7 @@ namespace UniKinect.V2PublicPreview
             }
             catch (COMException ex)
             {
-                if ((UInt32)ex.HResult == 0x8000000A)
+                if ((UInt32)ex.ErrorCode == 0x8000000A)
                 {
 
                 }
