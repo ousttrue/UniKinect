@@ -31,13 +31,16 @@ namespace SampleForm
             _depthStream = KinectImageStream.CreateDepthSteram(_depthWaitHandle.Handle);
             _skeletonStream = new KinectSkeletonStream(_skeletonWaitHandle.Handle);
 
+            dataGridView2.DataSource = _skeletons;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
             WaitUpdate(new WaitHandle[] { 
                 _imageWaitHandle
                 , _depthWaitHandle 
                 , _skeletonWaitHandle
             });
-
-            dataGridView2.DataSource = _skeletons;
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
