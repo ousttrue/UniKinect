@@ -8,8 +8,17 @@ namespace UniKinect.Nui
     {
         IntPtr _phStreamHandle;
 
-        public Int32 Width { get; private set; }
-        public Int32 Height { get; private set; }
+        int _width;
+        public override int Width
+        {
+            get { return _width; }
+        }
+
+        int _height;
+        public override int Height
+        {
+            get { return _height; }
+        }
 
         public KinectImageStream(Nui.NuiImageType type, Nui.NuiImageResolution resolution, IntPtr waitHandle):base(1000)
         {
@@ -19,23 +28,23 @@ namespace UniKinect.Nui
             switch (resolution)
             {
                 case NuiImageResolution.resolution1280x1024:
-                    Width = 1280;
-                    Height = 1024;
+                    _width = 1280;
+                    _height = 1024;
                     break;
 
                 case NuiImageResolution.resolution320x240:
-                    Width = 320;
-                    Height = 240;
+                    _width = 320;
+                    _height = 240;
                     break;
 
                 case NuiImageResolution.resolution640x480:
-                    Width = 640;
-                    Height = 480;
+                    _width = 640;
+                    _height = 480;
                     break;
 
                 case NuiImageResolution.resolution80x60:
-                    Width = 80;
-                    Height = 60;
+                    _width = 80;
+                    _height = 60;
                     break;
 
                 default:

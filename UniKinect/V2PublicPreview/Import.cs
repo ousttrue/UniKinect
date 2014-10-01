@@ -121,8 +121,8 @@ namespace UniKinect.V2PublicPreview
         Object CreateFrameDescription(ColorImageFormat format);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        [return: MarshalAs(UnmanagedType.IUnknown)]
-        Object get_FrameDescription();
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IFrameDescription get_FrameDescription();
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [return: MarshalAs(UnmanagedType.Interface)]

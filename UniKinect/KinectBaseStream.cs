@@ -4,6 +4,9 @@ namespace UniKinect
 {
     public abstract class KinectBaseStream: IDisposable
     {
+        public abstract Int32 Width { get; }
+        public abstract Int32 Height { get; }
+
         Int64 _timeStampForSecond;
         protected KinectBaseStream(Int64 timeStampForSecond)
         {
