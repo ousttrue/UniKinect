@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HResultExtension.cs" />
+    <Compile Include="KinectBaseFrame.cs" />
     <Compile Include="KinectBaseSensor.cs" />
     <Compile Include="KinectBaseStream.cs" />
     <Compile Include="Nui\KinectImageFrame.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="V2PublicPreview\V2DepthStream.cs" />
     <Compile Include="V2PublicPreview\V2ImageFrame.cs" />
     <Compile Include="V2PublicPreview\V2ImageStream.cs" />
+    <Compile Include="V2PublicPreview\V2Sensor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

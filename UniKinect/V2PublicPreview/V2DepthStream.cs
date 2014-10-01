@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace UniKinect.V2PublicPreview
 {
-    public class V2DepthStream : KinectBaseStream
+    public class V2DepthStream : KinectBaseImageStream
     {
         IDepthFrameReader m_reader;
 
@@ -30,7 +30,7 @@ namespace UniKinect.V2PublicPreview
             _height = frameDesc.get_Height();
         }
 
-        public V2DepthFrame GetFrame()
+        public override KinectBaseImageFrame GetFrame()
         {
             try
             {

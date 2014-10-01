@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace UniKinect.Nui
 {
-    public class KinectImageStream : KinectBaseStream
+    public class KinectImageStream : KinectBaseImageStream
     {
         IntPtr _phStreamHandle;
 
@@ -73,7 +73,7 @@ namespace UniKinect.Nui
         {
         }
 
-        public KInectImageFrame GetFrame()
+        public override KinectBaseImageFrame GetFrame()
         {
             try
             {

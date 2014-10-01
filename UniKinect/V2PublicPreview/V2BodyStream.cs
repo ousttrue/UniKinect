@@ -7,16 +7,6 @@ namespace UniKinect.V2PublicPreview
     {
         IBodyFrameReader m_reader;
 
-        public override int Width
-        {
-            get { throw new InvalidOperationException(); }
-        }
-
-        public override int Height
-        {
-            get { throw new InvalidOperationException(); }
-        }
-
         public V2BodyStream(IKinectSensor sensor)
             : base(10000000)
         {

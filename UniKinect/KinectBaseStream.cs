@@ -4,9 +4,6 @@ namespace UniKinect
 {
     public abstract class KinectBaseStream: IDisposable
     {
-        public abstract Int32 Width { get; }
-        public abstract Int32 Height { get; }
-
         Int64 _timeStampForSecond;
         protected KinectBaseStream(Int64 timeStampForSecond)
         {
@@ -87,5 +84,18 @@ namespace UniKinect
 
             return true;
         }
+    }
+
+    public abstract class KinectBaseImageStream : KinectBaseStream
+    {
+        public abstract Int32 Width { get; }
+        public abstract Int32 Height { get; }
+
+        protected KinectBaseImageStream(Int64 timeStampForSecond)
+            : base(timeStampForSecond)
+        {
+        }
+
+        public abstract KinectBaseImageFrame GetFrame();
     }
 }
