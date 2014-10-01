@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UniKinect.Nui;
+//using UniKinect.Nui;
+using UniKinect.V2PublicPreview;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 
 public class UniKinectDepth : MonoBehaviour {
 
-    KinectSensor _sensor;
+    IKinectSensor _sensor;
 
-    KinectImageStream _depthStream;
+    V2DepthStream _depthStream;
 
     public Texture2D DepthTexture;
 
@@ -23,8 +24,15 @@ public class UniKinectDepth : MonoBehaviour {
 	void Update () {
         if (_sensor == null)
         {
-            _sensor = new UniKinect.Nui.KinectSensor();
-            _depthStream = KinectImageStream.CreateDepthSteram(IntPtr.Zero);
+            UniKinect.ComHelper.ThrowIfFailed(Import.GetDefaultKinectSensor(out _sensor));
+            _sensor.Open();
+            if (!_sensor.get_IsOpen())
+            {
+                _sensor = null;
+                return;
+            }
+
+            _depthStream = new V2DepthStream(_sensor);
         }
 
         using (var frame = _depthStream.GetFrame())
@@ -46,7 +54,7 @@ public class UniKinectDepth : MonoBehaviour {
                 renderer.material.mainTexture = DepthTexture;
             }
 
-            Marshal.Copy(frame.Rect.pBits, _depth, 0, _depth.Length);
+            Marshal.Copy(frame.Buffer, _depth, 0, _depth.Length);
 
             var pixel32s = _depth.Select((Int16 d) =>
             {
@@ -65,7 +73,7 @@ public class UniKinectDepth : MonoBehaviour {
     {
         if (_sensor != null)
         {
-            _sensor.Dispose();
+            Marshal.ReleaseComObject(_sensor);
             _sensor = null;
         }
     }

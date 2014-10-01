@@ -121,8 +121,8 @@ namespace UniKinect.V2PublicPreview
         Object CreateFrameDescription(ColorImageFormat format);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        [return: MarshalAs(UnmanagedType.IUnknown)]
-        Object get_FrameDescription();
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IFrameDescription get_FrameDescription();
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [return: MarshalAs(UnmanagedType.Interface)]
@@ -650,8 +650,7 @@ namespace UniKinect.V2PublicPreview
         const String DllPath = @"C:\Windows\System32\Kinect20.dll";
         public const Int32 BodyCount = 6;
 
-        [DllImport(DllPath, PreserveSig = false, CallingConvention = CallingConvention.Winapi)]
-        [return: MarshalAs(UnmanagedType.Interface)]
-        public static extern IKinectSensor GetDefaultKinectSensor();
+        [DllImport(DllPath, PreserveSig = true, CallingConvention = CallingConvention.Winapi)]
+        public static extern Int32 GetDefaultKinectSensor([MarshalAs(UnmanagedType.Interface)]out IKinectSensor sensor);
     }
 }

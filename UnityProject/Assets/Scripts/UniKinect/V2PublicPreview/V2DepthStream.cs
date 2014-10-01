@@ -7,11 +7,27 @@ namespace UniKinect.V2PublicPreview
     {
         IDepthFrameReader m_reader;
 
+        int _width;
+        public override int Width
+        {
+            get { return _width; }
+        }
+
+        int _height;
+        public override int Height
+        {
+            get { return _height; }
+        }
+
         public V2DepthStream(IKinectSensor sensor)
             : base(10000000)
         {
             var source = sensor.get_DepthFrameSource();
             m_reader = source.OpenReader();
+
+            var frameDesc=source.get_FrameDescription();
+            _width = frameDesc.get_Width();
+            _height = frameDesc.get_Height();
         }
 
         public V2DepthFrame GetFrame()

@@ -22,7 +22,7 @@ namespace UniKinect.Nui
         public KInectImageFrame(IntPtr phStreamHandle)
         {
             _phStreamHandle = phStreamHandle;
-            Nui.Import.ThrowIfFailed(Nui.Import.NuiImageStreamGetNextFrame(_phStreamHandle, 0, out _imageFramePtr));
+            ComHelper.ThrowIfFailed(Nui.Import.NuiImageStreamGetNextFrame(_phStreamHandle, 0, out _imageFramePtr));
             if (_imageFramePtr == IntPtr.Zero)
             {
                 return;
@@ -30,8 +30,7 @@ namespace UniKinect.Nui
             _initialized = true;
 
             Frame = (Nui.NuiImageFrame)Marshal.PtrToStructure(_imageFramePtr, typeof(Nui.NuiImageFrame));
-            var pFrameTexture = (Nui.INuiFrameTexture)Marshal.GetObjectForIUnknown(Frame.pFrameTexture);
-            pFrameTexture.LockRect(0, ref _rect, IntPtr.Zero, 0);
+            Frame.pFrameTexture.LockRect(0, ref _rect, IntPtr.Zero, 0);
         }
 
         // Flag: Has Dispose already been called?

@@ -20,7 +20,7 @@ namespace SampleForm
     {
         Font _font = new Font("ＭＳ ゴシック", 12);
 
-        KinectSensor _sensor;
+        KinectBaseSensor _sensor;
 
         KinectImageStream _imageStream;
         ManualResetEvent _imageWaitHandle = new ManualResetEvent(false);
@@ -157,9 +157,9 @@ namespace SampleForm
 
         void WaitUpdate(WaitHandle[] handles)
         {
-            try
+            var task = Task.Factory.StartNew(() =>
             {
-                var task = Task.Factory.StartNew(() =>
+                try
                 {
                     var index = WaitHandle.WaitAny(handles);
                     switch (index)
@@ -179,11 +179,12 @@ namespace SampleForm
 
                     WaitUpdate(handles);
 
-                });
-            }
-            catch (ObjectDisposedException)
-            {
-            }
+                }
+                catch (ObjectDisposedException)
+                {
+                    Console.WriteLine("disposed");
+                }
+            });
         }
 
         delegate void SetSkeletonFrameDelegate(KinectSkeletonFrame frame);

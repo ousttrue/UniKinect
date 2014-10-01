@@ -26,18 +26,6 @@ namespace UniKinect.Nui
         public static int SkeletonCount = 6;
         public static int SkeletonMaxTracked = 2;
 
-        public static void ThrowIfFailed(Int32 hr)
-        {
-            if (hr == 0)
-            {
-                // S_OK;
-            }
-            else
-            {
-                throw new COMException("ComError", hr);
-            }
-        }
-
         [DllImport(DllPath, PreserveSig = true)]
         public static extern Int32 NuiInitialize(NuiInitializeFlags dwFlags);
 
@@ -84,7 +72,8 @@ namespace UniKinect.Nui
         public uint dwFrameNumber;
         public NuiImageType eImageType;
         public NuiImageResolution eResolution;
-        public IntPtr pFrameTexture;
+        [MarshalAs(UnmanagedType.Interface)]
+        public INuiFrameTexture pFrameTexture;
         public uint dwFrameFlags_NotUsed;
         public NuiImageViewArea ViewArea_NotUsed;
     }

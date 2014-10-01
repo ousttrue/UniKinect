@@ -3,52 +3,23 @@
 
 namespace UniKinect.Nui
 {
-    public class KinectSensor : IDisposable
+    public class KinectSensor : KinectBaseSensor
     {
-        Boolean _initialized;
         Int32 _angle;
 
         public KinectSensor()
         {
             Nui.Import.NuiInitialize(Nui.NuiInitializeFlags.UsesColor
                 | Nui.NuiInitializeFlags.UsesDepthAndPlayerIndex
-                | Nui.NuiInitializeFlags.UsesSkeleton);
+                | Nui.NuiInitializeFlags.UsesSkeleton).ThrowIfFail();
 
-            _initialized = true;
-
-            Nui.Import.ThrowIfFailed(Nui.Import.NuiCameraElevationGetAngle(out _angle));
+            Nui.Import.NuiCameraElevationGetAngle(out _angle).ThrowIfFail();
         }
 
-        // Flag: Has Dispose already been called?
-        bool disposed = false;
-
-        // Public implementation of Dispose pattern callable by consumers.
-        public void Dispose()
+        protected override void OnDispose()
         {
-            Console.WriteLine("Dispose");
-
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        // Protected implementation of Dispose pattern.
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed)
-                return;
-
-            if (disposing)
-            {
-                if (_initialized)
-                {
-                    // Free any other managed objects here.
-                    Nui.Import.NuiShutdown();
-                }
-            }
-
-            // Free any unmanaged objects here.
-            //
-            disposed = true;
+            // Free any other managed objects here.
+            Nui.Import.NuiShutdown();
         }
     }
 }

@@ -1,24 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-
-namespace UniKinect.Nui
+namespace UniKinect
 {
-    public class KinectSensor : IDisposable
+    public abstract class KinectBaseSensor: IDisposable
     {
-        Boolean _initialized;
-        Int32 _angle;
-
-        public KinectSensor()
-        {
-            Nui.Import.NuiInitialize(Nui.NuiInitializeFlags.UsesColor
-                | Nui.NuiInitializeFlags.UsesDepthAndPlayerIndex
-                | Nui.NuiInitializeFlags.UsesSkeleton);
-
-            _initialized = true;
-
-            ComHelper.ThrowIfFailed(Nui.Import.NuiCameraElevationGetAngle(out _angle));
-        }
-
         // Flag: Has Dispose already been called?
         bool disposed = false;
 
@@ -39,16 +28,14 @@ namespace UniKinect.Nui
 
             if (disposing)
             {
-                if (_initialized)
-                {
-                    // Free any other managed objects here.
-                    Nui.Import.NuiShutdown();
-                }
+                OnDispose();
             }
 
             // Free any unmanaged objects here.
             //
             disposed = true;
         }
+
+        abstract protected void OnDispose();
     }
 }

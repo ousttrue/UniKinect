@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HResultExtension.cs" />
+    <Compile Include="KinectBaseSensor.cs" />
     <Compile Include="KinectBaseStream.cs" />
     <Compile Include="Nui\KinectImageFrame.cs" />
     <Compile Include="Nui\KinectImageStream.cs" />
