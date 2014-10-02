@@ -42,7 +42,7 @@ namespace UniKinect.V2PublicPreview
             get { return _description.get_BytesPerPixel(); }
         }
 
-        public Int32 Width
+        public override Int32 Width
         {
             get { return _description.get_Width(); }
         }

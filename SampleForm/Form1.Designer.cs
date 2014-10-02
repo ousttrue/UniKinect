@@ -34,6 +34,8 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.maxDepth = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.colorFps = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
@@ -76,7 +78,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 489);
+            this.label1.Location = new System.Drawing.Point(158, 489);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(56, 12);
             this.label1.TabIndex = 6;
@@ -84,18 +86,38 @@
             // 
             // maxDepth
             // 
-            this.maxDepth.Location = new System.Drawing.Point(74, 486);
+            this.maxDepth.Location = new System.Drawing.Point(220, 486);
             this.maxDepth.Name = "maxDepth";
             this.maxDepth.ReadOnly = true;
             this.maxDepth.Size = new System.Drawing.Size(100, 19);
             this.maxDepth.TabIndex = 7;
             this.maxDepth.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 489);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(53, 12);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "ColorFPS";
+            // 
+            // colorFps
+            // 
+            this.colorFps.Location = new System.Drawing.Point(71, 486);
+            this.colorFps.Name = "colorFps";
+            this.colorFps.ReadOnly = true;
+            this.colorFps.Size = new System.Drawing.Size(73, 19);
+            this.colorFps.TabIndex = 9;
+            this.colorFps.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1034, 747);
+            this.Controls.Add(this.colorFps);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.maxDepth);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listBox1);
@@ -122,6 +144,8 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox maxDepth;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox colorFps;
     }
 }
 

@@ -40,6 +40,7 @@ namespace UniKinect
     public abstract class KinectBaseImageFrame : KinectBaseFrame
     {
         public abstract Int32 Pitch { get; }
+        public abstract Int32 Width { get; }
         public abstract Int32 Height { get; }
         public abstract IntPtr Buffer { get; }
     }

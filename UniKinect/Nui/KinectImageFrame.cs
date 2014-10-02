@@ -33,6 +33,13 @@ namespace UniKinect.Nui
             get { return Rect.size/Rect.pitch; }
         }
 
+        public override int Width
+        {
+
+            // ?
+            get { return Rect.pitch / 3; }
+        }
+
         public KInectImageFrame(IntPtr phStreamHandle)
         {
             _phStreamHandle = phStreamHandle;

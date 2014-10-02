@@ -30,6 +30,11 @@ namespace UniKinect.V2PublicPreview
             _height = frameDesc.get_Height();
         }
 
+        public IntPtr CreateWaitHandle()
+        {
+            return m_reader.SubscribeFrameArrived();
+        }
+
         public override KinectBaseImageFrame GetFrame()
         {
             try

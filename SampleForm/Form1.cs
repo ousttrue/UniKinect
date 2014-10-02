@@ -11,8 +11,13 @@ using UniKinect;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 using System.Threading;
+#if false
+// V1
 using UniKinect.Nui;
-
+#else
+// V2
+using UniKinect.V2PublicPreview;
+#endif
 
 namespace SampleForm
 {
@@ -27,13 +32,32 @@ namespace SampleForm
         {
             InitializeComponent();
 
+            _imageWaitHandle = new ManualResetEvent(false);
+            _depthWaitHandle = new ManualResetEvent(false);
+            _skeletonWaitHandle = new ManualResetEvent(false);
+
+#if false
             _sensor = new KinectSensor();
 
             _imageStream = KinectImageStream.CreateImageStream(_imageWaitHandle.Handle);
             _depthStream = KinectImageStream.CreateDepthSteram(_depthWaitHandle.Handle);
             _skeletonStream = new KinectSkeletonStream(_skeletonWaitHandle.Handle);
-
             dataGridView2.DataSource = _skeletons;
+#else
+            var sensor = new V2Sensor();
+            _sensor = sensor;
+
+            var imageStream = new V2ImageStream(sensor.Sensor);
+            _imageStream = imageStream;
+            //_imageWaitHandle=new HandleHolder(imageStream.CreateWaitHandle());
+            _imageWaitHandle = new ManualResetEvent(false);
+            _imageWaitHandle.SafeWaitHandle = new Microsoft.Win32.SafeHandles.SafeWaitHandle(
+                imageStream.CreateWaitHandle(), false);
+
+            //var depthStream=new V2DepthStream(sensor.Sensor);
+            //_depthStream = depthStream;
+            //_depthWaitHandle = new HandleHolder(depthStream.CreateWaitHandle());
+#endif
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -41,22 +65,47 @@ namespace SampleForm
             MaxDepth = 1;
             maxDepth.DataBindings.Add("Text", this, "MaxDepth");
 
-            WaitUpdate(new WaitHandle[] { 
+            colorFps.DataBindings.Add("Text", this, "ColorFps");
+
+            var handles = new WaitHandle[] { 
                 _imageWaitHandle
                 , _depthWaitHandle 
                 , _skeletonWaitHandle
-            });
+            };
+
+            WaitUpdate(handles);
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            _skeletonWaitHandle.Dispose();
-            _depthWaitHandle.Dispose();
-            _imageWaitHandle.Dispose();
-            _skeletonStream.Dispose();
-            _depthStream.Dispose();
-            _imageStream.Dispose();
-            _sensor.Dispose();
+            if (_skeletonWaitHandle != null)
+            {
+                _skeletonWaitHandle.Dispose();
+            }
+            if (_depthWaitHandle != null)
+            {
+                _depthWaitHandle.Dispose();
+            }
+            if (_imageWaitHandle != null)
+            {
+                _imageWaitHandle.Dispose();
+            }
+            if (_skeletonStream != null)
+            {
+                _skeletonStream.Dispose();
+            }
+            if (_depthStream != null)
+            {
+                _depthStream.Dispose();
+            }
+            if (_imageStream != null)
+            {
+                _imageStream.Dispose();
+            }
+            if (_sensor != null)
+            {
+                _sensor.Dispose();
+            }
         }
 
         void WaitUpdate(WaitHandle[] handles)
@@ -66,22 +115,25 @@ namespace SampleForm
                 try
                 {
                     var index = WaitHandle.WaitAny(handles);
+                    Action next = () =>
+                    {
+                        WaitUpdate(handles);
+                    };
+
                     switch (index)
                     {
                         case 0:
-                            UpdatePictureBox(_imageStream, ImageToBitmap, pictureBox1);
+                            UpdatePictureBox(_imageStream, ImageToBitmap, pictureBox1, next);
                             break;
 
                         case 1:
-                            UpdatePictureBox(_depthStream, DepthToBitmap, pictureBox2);
+                            UpdatePictureBox(_depthStream, DepthToBitmap, pictureBox2, next);
                             break;
 
                         case 2:
-                            UpdateSkeleton(_skeletonStream);
+                            //UpdateSkeleton(_skeletonStream);
                             break;
                     }
-
-                    WaitUpdate(handles);
 
                 }
                 catch (ObjectDisposedException)
@@ -93,16 +145,16 @@ namespace SampleForm
 
         #region ImageStream
         KinectBaseImageStream _imageStream;
-        ManualResetEvent _imageWaitHandle = new ManualResetEvent(false);
+        WaitHandle _imageWaitHandle;
 
         KinectBaseImageStream _depthStream;
-        ManualResetEvent _depthWaitHandle = new ManualResetEvent(false);
+        WaitHandle _depthWaitHandle;
 
         delegate void SetBitmapDelegate(Bitmap bitmap);
 
         Bitmap ImageToBitmap(KinectBaseImageFrame frame)
         {
-            return new Bitmap(640, 480
+            return new Bitmap(frame.Width, frame.Height
                 , frame.Pitch, PixelFormat.Format32bppRgb, frame.Buffer);
         }
 
@@ -177,32 +229,64 @@ namespace SampleForm
             return bitmap;
         }
 
-        void UpdatePictureBox(KinectBaseImageStream src, Func<KinectBaseImageFrame, Bitmap> converter, PictureBox dst)
+        int _colorFps;
+        public int ColorFps
         {
-            using (var frame = src.GetFrame())
+            get { return _colorFps; }
+            set
             {
-                if (frame == null)
+                if (_colorFps == value)
                 {
                     return;
                 }
-                var converted = converter(frame);
-
-                // draw fps
-                Graphics g = Graphics.FromImage(converted);
-                RectangleF rect = new RectangleF(0, 0, 200, 60);
-                g.DrawString(String.Format("{0}", src.FPS), _font, Brushes.Yellow, rect);
-
-                BeginInvoke(new SetBitmapDelegate((Bitmap bitmap) =>
+                _colorFps = value;
+                if (PropertyChanged != null)
                 {
-                    dst.Image = bitmap;
-                }), new Object[] { converted });
+                    PropertyChanged(this, new PropertyChangedEventArgs("ColorFps"));
+                }
             }
+        }
+
+        void UpdatePictureBox(KinectBaseImageStream src, Func<KinectBaseImageFrame, Bitmap> converter, PictureBox dst, Action next)
+        {
+            Action action = () =>
+            {
+                using (var frame = src.GetFrame())
+                {
+                    if (frame == null)
+                    {
+                        return;
+                    }
+                    var converted = converter(frame);
+
+                    // draw fps
+                    using (Graphics g = Graphics.FromImage(converted))
+                    {
+
+                        RectangleF rect = new RectangleF(0, 0, 200, 60);
+
+                        //var fps = String.Format("{0}", src.FPS);
+                        //g.DrawString(fps, _font, Brushes.Yellow, rect);
+                        ColorFps = src.FPS;
+
+                        //BeginInvoke(new SetBitmapDelegate((Bitmap bitmap) =>
+                        {
+                            dst.Image = converted;
+
+                        }
+                        //), new Object[] { converted });
+                    }
+                }
+                next();
+            };
+            BeginInvoke(action);
         }
         #endregion
 
+        ManualResetEvent _skeletonWaitHandle;
+        KinectBaseStream _skeletonStream;
+        /*
         #region SkeletonStream
-        KinectSkeletonStream _skeletonStream;
-        ManualResetEvent _skeletonWaitHandle = new ManualResetEvent(false);
 
         class Skeleton : INotifyPropertyChanged
         {
@@ -297,6 +381,6 @@ namespace SampleForm
             BeginInvoke(new SetSkeletonFrameDelegate(SetSkeletonFrame), new[] { frame });
         }
         #endregion
-
+        */
     }
 }
