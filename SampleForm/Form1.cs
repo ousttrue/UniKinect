@@ -16,8 +16,10 @@ using UniKinect.Nui;
 
 namespace SampleForm
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form,  INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         Font _font = new Font("ＭＳ ゴシック", 12);
         KinectBaseSensor _sensor;
 
@@ -36,6 +38,9 @@ namespace SampleForm
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            MaxDepth = 1;
+            maxDepth.DataBindings.Add("Text", this, "MaxDepth");
+
             WaitUpdate(new WaitHandle[] { 
                 _imageWaitHandle
                 , _depthWaitHandle 
@@ -101,13 +106,55 @@ namespace SampleForm
                 , frame.Pitch, PixelFormat.Format32bppRgb, frame.Buffer);
         }
 
+        Color[] ColorMap = new Color[]{
+            Color.White,
+            Color.Red,
+            Color.Green,
+            Color.Blue,
+            Color.Cyan,
+            Color.Magenta,
+            Color.Yellow,
+        };
+
+        int _maxDepth;
+        public int MaxDepth
+        {
+            get { return _maxDepth; }
+            set
+            {
+                if (_maxDepth == value)
+                {
+                    return;
+                }
+                _maxDepth = value;
+                if (PropertyChanged != null)
+                {
+                    Action action = () =>
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs("MaxDepth"));
+                    };
+                    BeginInvoke(action);
+                }
+            }
+        }
+
+        int _tmpMaxDepth;
         Byte[] DepthToPixel(Int32 depth)
         {
+            var player = depth & 0x7;
+
             depth = depth >> 3;
+            if (depth > _tmpMaxDepth)
+            {
+                _tmpMaxDepth = depth;
+            }
+
+            var color = ColorMap[player];
+
             return new Byte[]{
-                (Byte)depth
-                , (Byte)depth
-                , (Byte)depth
+                (Byte)(color.B * depth / MaxDepth)
+                , (Byte)(color.G * depth / MaxDepth)
+                , (Byte)(color.R * depth / MaxDepth)
                 , 255
             };
         }
@@ -122,6 +169,10 @@ namespace SampleForm
                 , ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
             Marshal.Copy(depthBuffer.SelectMany(s => DepthToPixel((UInt16)s)).ToArray()
                 , 0, data.Scan0, 320 * 240 * 4);
+            if (_tmpMaxDepth > MaxDepth)
+            {
+                MaxDepth = _tmpMaxDepth;
+            }
             bitmap.UnlockBits(data);
             return bitmap;
         }

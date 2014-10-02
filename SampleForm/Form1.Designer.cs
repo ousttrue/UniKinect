@@ -32,6 +32,8 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.maxDepth = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
@@ -47,9 +49,9 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(0, 486);
+            this.pictureBox2.Location = new System.Drawing.Point(0, 511);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(320, 240);
+            this.pictureBox2.Size = new System.Drawing.Size(320, 213);
             this.pictureBox2.TabIndex = 1;
             this.pictureBox2.TabStop = false;
             // 
@@ -71,11 +73,31 @@
             this.listBox1.Size = new System.Drawing.Size(376, 712);
             this.listBox1.TabIndex = 5;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 489);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(56, 12);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "MaxDepth";
+            // 
+            // maxDepth
+            // 
+            this.maxDepth.Location = new System.Drawing.Point(74, 486);
+            this.maxDepth.Name = "maxDepth";
+            this.maxDepth.ReadOnly = true;
+            this.maxDepth.Size = new System.Drawing.Size(100, 19);
+            this.maxDepth.TabIndex = 7;
+            this.maxDepth.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1034, 747);
+            this.Controls.Add(this.maxDepth);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.dataGridView2);
             this.Controls.Add(this.pictureBox2);
@@ -88,6 +110,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -97,6 +120,8 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox maxDepth;
     }
 }
 
