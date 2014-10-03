@@ -72,8 +72,8 @@ namespace UniKinect.Nui
         public uint dwFrameNumber;
         public NuiImageType eImageType;
         public NuiImageResolution eResolution;
-        [MarshalAs(UnmanagedType.Interface)]
-        public INuiFrameTexture pFrameTexture;
+        //[MarshalAs(UnmanagedType.Interface)]
+        public IntPtr pFrameTexture;
         public uint dwFrameFlags_NotUsed;
         public NuiImageViewArea ViewArea_NotUsed;
     }

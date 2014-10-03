@@ -33,7 +33,6 @@ namespace UniKinect.Nui
             get { return Rect.pitch; }
         }
 
-        protected int _height;
         public override int Height
         {
             get { return Rect.size/Rect.pitch; }
@@ -41,18 +40,21 @@ namespace UniKinect.Nui
 
         public override int Width
         {
-
-            // ?
-            get { return Rect.pitch / 3; }
+            get {
+                return Rect.pitch / BytesPerPixel; 
+            }
         }
 
+        private int _bytesPerPixel;
         public override int BytesPerPixel
         {
-            get { return 4; }
+            get { return _bytesPerPixel; }
         }
 
-        public KInectImageFrame(IntPtr phStreamHandle)
+        public KInectImageFrame(IntPtr phStreamHandle, Int32 bytesPerPixel)
         {
+            _bytesPerPixel = bytesPerPixel;
+
             _phStreamHandle = phStreamHandle;
             Nui.Import.NuiImageStreamGetNextFrame(_phStreamHandle, 0, out _imageFramePtr).ThrowIfFail();
             if (_imageFramePtr == IntPtr.Zero)
@@ -61,7 +63,9 @@ namespace UniKinect.Nui
             }
 
             Frame = (Nui.NuiImageFrame)Marshal.PtrToStructure(_imageFramePtr, typeof(Nui.NuiImageFrame));
-            Frame.pFrameTexture.LockRect(0, ref _rect, IntPtr.Zero, 0);
+
+            var pFrameTexture = (Nui.INuiFrameTexture)Marshal.GetObjectForIUnknown(Frame.pFrameTexture);
+            pFrameTexture.LockRect(0, ref _rect, IntPtr.Zero, 0);
         }
 
         protected override void OnDispose()

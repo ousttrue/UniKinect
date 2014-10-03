@@ -57,7 +57,17 @@ namespace UniKinect.Nui
                     break;
             }
 
-            _bytesPerPixel = 4;
+            switch(type)
+            {
+                case NuiImageType.Color:
+                    _bytesPerPixel = 4;
+                    break;
+
+                case NuiImageType.DepthAndPlayerIndex:
+                case NuiImageType.Depth:
+                    _bytesPerPixel = 2;
+                    break;
+            }
         }
 
         public static KinectImageStream CreateImageStream(IntPtr waitHandle)
@@ -83,7 +93,7 @@ namespace UniKinect.Nui
 
         public override KinectBaseImageFrame GetFrame()
         {
-            var frame = new KInectImageFrame(_phStreamHandle);
+            var frame = new KInectImageFrame(_phStreamHandle, BytesPerPixel);
             if (!NewTimeStamp(frame.Frame.liTimeStamp))
             {
                 return null;
