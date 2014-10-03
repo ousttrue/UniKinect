@@ -20,6 +20,12 @@ namespace UniKinect.Nui
             get { return _height; }
         }
 
+        int _bytesPerPixel;
+        public override int BytesPerPixel
+        {
+            get { return _bytesPerPixel; }
+        }
+
         public KinectImageStream(Nui.NuiImageType type, Nui.NuiImageResolution resolution, IntPtr waitHandle):base(1000)
         {
             Nui.Import.NuiImageStreamOpen(type, resolution
@@ -50,6 +56,8 @@ namespace UniKinect.Nui
                 default:
                     break;
             }
+
+            _bytesPerPixel = 4;
         }
 
         public static KinectImageStream CreateImageStream(IntPtr waitHandle)

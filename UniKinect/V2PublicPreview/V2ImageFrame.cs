@@ -6,7 +6,6 @@ namespace UniKinect.V2PublicPreview
     public class V2ImageFrame : KinectBaseImageFrame
     {
         IColorFrame _frame;
-
         IFrameDescription _description;
         IColorFrameArrivedEventArgs _data;
         IColorFrameReference _reference;

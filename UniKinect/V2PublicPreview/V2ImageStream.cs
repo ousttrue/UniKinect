@@ -20,6 +20,12 @@ namespace UniKinect.V2PublicPreview
             get { return _height; }
         }
 
+        int _bytesPerPixel;
+        public override int BytesPerPixel
+        {
+            get { return _bytesPerPixel; }
+        }
+
         public V2ImageStream(IKinectSensor sensor):base(10000000)
         {
             m_source = sensor.get_ColorFrameSource();
@@ -28,6 +34,7 @@ namespace UniKinect.V2PublicPreview
             var frameDesc=m_source.get_FrameDescription();
             _width = frameDesc.get_Width();
             _height = frameDesc.get_Height();
+            _bytesPerPixel=(Int32)frameDesc.get_BytesPerPixel();
         }
 
         public IntPtr CreateWaitHandle()

@@ -20,6 +20,12 @@ namespace UniKinect.V2PublicPreview
             get { return _height; }
         }
 
+        int _bytesPerPixel;
+        public override int BytesPerPixel
+        {
+            get { return _bytesPerPixel; }
+        }
+
         public V2DepthStream(IKinectSensor sensor)
             : base(10000000)
         {
@@ -38,7 +44,7 @@ namespace UniKinect.V2PublicPreview
 
         public override KinectBaseImageFrame GetFrame()
         {
-            var frame = new V2DepthFrame(m_reader.AcquireLatestFrame(), null);
+            var frame = new V2DepthFrame(m_reader.AcquireLatestFrame());
             if (!NewTimeStamp(frame.Time))
             {
                 frame.Dispose();
@@ -49,22 +55,13 @@ namespace UniKinect.V2PublicPreview
 
         public override KinectBaseImageFrame GetFrame(IntPtr handle)
         {
-            var data = m_reader.GetFrameArrivedEventData(handle);
-            var frameRef = data.get_FrameReference();
-            try
+            var frame = new V2DepthFrame(m_reader, handle);
+            if (!NewTimeStamp(frame.Time))
             {
-                var frame = new V2DepthFrame(frameRef.AcquireFrame(), frameRef);
-                if (!NewTimeStamp(frame.Time))
-                {
-                    frame.Dispose();
-                    return null;
-                }
-                return frame;
+                frame.Dispose();
+                return null;
             }
-            finally
-            {
-                Marshal.ReleaseComObject(data);
-            }
+            return frame;
         }
 
         protected override void OnDispose()

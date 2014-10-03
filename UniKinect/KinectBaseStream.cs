@@ -90,6 +90,7 @@ namespace UniKinect
     {
         public abstract Int32 Width { get; }
         public abstract Int32 Height { get; }
+        public abstract Int32 BytesPerPixel { get; }
 
         protected KinectBaseImageStream(Int64 timeStampForSecond)
             : base(timeStampForSecond)

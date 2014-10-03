@@ -5,12 +5,10 @@ namespace UniKinect.V2PublicPreview
 {
     public class V2DepthFrame : KinectBaseImageFrame
     {
-        Boolean _initialized;
-
         IDepthFrame _frame;
-        IDepthFrameReference _reference;
-
         IFrameDescription _description;
+        IDepthFrameArrivedEventArgs _data;
+        IDepthFrameReference _reference;
 
         public Int64 Time
         {
@@ -53,22 +51,56 @@ namespace UniKinect.V2PublicPreview
         }
 
 
-        public V2DepthFrame(IDepthFrame frame, IDepthFrameReference reference)
+        public V2DepthFrame(IDepthFrame frame)
         {
             _frame = frame;
-            _reference = reference;
-            _initialized = true;
             _description = frame.get_FrameDescription();
             Time = frame.get_RelativeTime();
             UInt32 capacity;
             _buffer = _frame.AccessUnderlyingBuffer(out capacity);
         }
 
+        public V2DepthFrame(IDepthFrameReader reader, IntPtr handle)
+        {
+            try
+            {
+                _data = reader.GetFrameArrivedEventData(handle);
+                _reference = _data.get_FrameReference();
+                _frame = _reference.AcquireFrame();
+
+                _description = _frame.get_FrameDescription();
+                Time = _frame.get_RelativeTime();
+                UInt32 capacity;
+                _buffer = _frame.AccessUnderlyingBuffer(out capacity);
+            }
+            catch (COMException)
+            {
+                Dispose();
+            }
+        }
+
         protected override void OnDispose()
         {
-            Marshal.ReleaseComObject(_description);
-            Marshal.ReleaseComObject(_frame);
-            Marshal.ReleaseComObject(_reference);
+            if (_description != null)
+            {
+                Marshal.ReleaseComObject(_description);
+                _description = null;
+            }
+            if (_frame != null)
+            {
+                Marshal.ReleaseComObject(_frame);
+                _frame = null;
+            }
+            if (_reference != null)
+            {
+                Marshal.ReleaseComObject(_reference);
+                _reference = null;
+            }
+            if (_data != null)
+            {
+                Marshal.ReleaseComObject(_data);
+                _data = null;
+            }
         }
     }
 }

@@ -37,10 +37,6 @@ namespace SampleForm
         {
             InitializeComponent();
 
-            _imageWaitHandle = new ManualResetEvent(false);
-            _depthWaitHandle = new ManualResetEvent(false);
-            _skeletonWaitHandle = new ManualResetEvent(false);
-
 #if false
             // v1
             _sensor = new KinectSensor();
@@ -54,17 +50,28 @@ namespace SampleForm
             var sensor = new V2Sensor();
             _sensor = sensor;
 
+           
             {
-                var imageStream = new V2ImageStream(sensor.Sensor);
+                var stream = new V2ImageStream(sensor.Sensor);
 
-                var imageWaitHandle = new ManualResetEvent(false);
-                imageWaitHandle.SafeWaitHandle = new Microsoft.Win32.SafeHandles.SafeWaitHandle(
-                    imageStream.CreateWaitHandle(), false);
+                var waitHandle = new ManualResetEvent(false);
+                waitHandle.SafeWaitHandle = new Microsoft.Win32.SafeHandles.SafeWaitHandle(
+                    stream.CreateWaitHandle(), false);
 
-                StartUpdating(imageStream, imageWaitHandle, pictureBox1);
+                var buffer = new Byte[stream.Width * stream.Height * stream.BytesPerPixel];
+                var bitmap = new Bitmap(stream.Width, stream.Height);
+                Action<KinectBaseImageFrame> assignFrame = frame =>
+                {
+                    Marshal.Copy(frame.Buffer, buffer, 0, buffer.Length);
+                    bitmap.SetPixels(buffer);
+                    pictureBox1.Image = bitmap;
+                };
+
+                StartUpdating(stream, waitHandle, assignFrame);
             }
 
-            if(false)
+
+            /*
             {
                 var stream = new V2DepthStream(sensor.Sensor);
 
@@ -72,8 +79,18 @@ namespace SampleForm
                 waitHandle.SafeWaitHandle = new Microsoft.Win32.SafeHandles.SafeWaitHandle(
                     stream.CreateWaitHandle(), false);
 
-                StartUpdating(stream, waitHandle, pictureBox2);
+                var buffer = new Int16[stream.Width * stream.Height];
+                var bitmap = new Bitmap(stream.Width, stream.Height);
+                Action<KinectBaseImageFrame> assignFrame = frame =>
+                {
+                    Marshal.Copy(frame.Buffer, buffer, 0, buffer.Length);
+                    bitmap.SetPixels(buffer.SelectMany(d => DepthToPixel(d)).ToArray());
+                    pictureBox2.Image = bitmap;
+                };
+
+                StartUpdating(stream, waitHandle, assignFrame);
             }
+            */
 #endif
         }
 
@@ -83,12 +100,6 @@ namespace SampleForm
             maxDepth.DataBindings.Add("Text", this, "MaxDepth");
 
             colorFps.DataBindings.Add("Text", this, "ColorFps");
-
-            var handles = new WaitHandle[] { 
-                _imageWaitHandle
-                , _depthWaitHandle 
-                , _skeletonWaitHandle
-            };
         }
 
         bool _closing;
@@ -103,33 +114,19 @@ namespace SampleForm
             {
                 _skeletonWaitHandle.Dispose();
             }
-            if (_depthWaitHandle != null)
-            {
-                _depthWaitHandle.Dispose();
-            }
-            if (_imageWaitHandle != null)
-            {
-                _imageWaitHandle.Dispose();
-            }
+
             if (_skeletonStream != null)
             {
                 _skeletonStream.Dispose();
             }
-            if (_depthStream != null)
-            {
-                _depthStream.Dispose();
-            }
-            if (_imageStream != null)
-            {
-                _imageStream.Dispose();
-            }
+
             if (_sensor != null)
             {
                 _sensor.Dispose();
             }
         }
 
-        void StartUpdating(KinectBaseImageStream stream, WaitHandle waitHandle, PictureBox target)
+        void StartUpdating(KinectBaseImageStream stream, WaitHandle waitHandle, Action<KinectBaseImageFrame> assignFrame)
         {
             if (_closing)
             {
@@ -144,7 +141,7 @@ namespace SampleForm
                 .Subscribe(
                 frame =>
                 {
-                    target.Image = ImageToBitmap(frame);
+                    assignFrame(frame);
                     ColorFps = stream.FPS;
                     frame.Dispose();
                 }
@@ -153,25 +150,11 @@ namespace SampleForm
                     Console.WriteLine(ex);
                     Console.WriteLine(V2ImageFrame.Counter);
                 }
-                , ()=> StartUpdating(stream, waitHandle, target)
+                , ()=> StartUpdating(stream, waitHandle, assignFrame)
                 );
         }
 
         #region ImageStream
-        KinectBaseImageStream _imageStream;
-        WaitHandle _imageWaitHandle;
-
-        KinectBaseImageStream _depthStream;
-        WaitHandle _depthWaitHandle;
-
-        delegate void SetBitmapDelegate(Bitmap bitmap);
-
-        Bitmap ImageToBitmap(KinectBaseImageFrame frame)
-        {
-            return new Bitmap(frame.Width, frame.Height
-                , frame.Pitch, PixelFormat.Format32bppRgb, frame.Buffer);
-        }
-
         Color[] ColorMap = new Color[]{
             Color.White,
             Color.Red,
@@ -205,7 +188,24 @@ namespace SampleForm
         }
 
         int _tmpMaxDepth;
-        Byte[] DepthToPixel(Int32 depth)
+        Byte[] DepthToPixel(Int16 depth)
+        {
+            //var player = depth & 0x7;
+            if (depth > (Int16)_tmpMaxDepth)
+            {
+                _tmpMaxDepth = depth;
+            }
+
+            // BGRA
+            return new Byte[]{
+                (Byte)(depth / MaxDepth)
+                , (Byte)(depth / MaxDepth)
+                , (Byte)(depth / MaxDepth)
+                , 255
+            };
+        }
+
+        Byte[] DepthToPixelWithIndex(Int32 depth)
         {
             var player = depth & 0x7;
 
@@ -223,24 +223,6 @@ namespace SampleForm
                 , (Byte)(depth / MaxDepth)
                 , (Byte)(depth / MaxDepth)
             };
-        }
-
-        Bitmap DepthToBitmap(KinectBaseImageFrame frame)
-        {
-            var depthBuffer = new Int16[320 * 240];
-            Marshal.Copy(frame.Buffer, depthBuffer, 0, frame.Pitch * frame.Height / 2);
-
-            var bitmap = new Bitmap(320, 240);
-            var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height)
-                , ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
-            Marshal.Copy(depthBuffer.SelectMany(s => DepthToPixel((UInt16)s)).ToArray()
-                , 0, data.Scan0, 320 * 240 * 4);
-            if (_tmpMaxDepth > MaxDepth)
-            {
-                MaxDepth = _tmpMaxDepth;
-            }
-            bitmap.UnlockBits(data);
-            return bitmap;
         }
 
         int _colorFps;
