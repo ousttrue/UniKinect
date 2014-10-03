@@ -8,6 +8,7 @@ namespace UniKinect.V2PublicPreview
         IColorFrame _frame;
 
         IFrameDescription _description;
+        IColorFrameArrivedEventArgs _data;
         IColorFrameReference _reference;
 
         public Int64 Time
@@ -52,15 +53,37 @@ namespace UniKinect.V2PublicPreview
             get { return _description.get_Height(); }
         }
 
+        public static Int32 Counter;
 
-        public V2ImageFrame(IColorFrame frame, IColorFrameReference reference)
+        public V2ImageFrame(IColorFrame frame)
         {
             _frame = frame;
-            _reference = reference;
             _description = frame.get_FrameDescription();
             Time = frame.get_RelativeTime();
             UInt32 capacity;
             _buffer = _frame.AccessRawUnderlyingBuffer(out capacity);
+        }
+
+        public V2ImageFrame(IColorFrameReader reader, IntPtr handle)
+        {
+            ++Counter;
+
+            try
+            {
+                _data = reader.GetFrameArrivedEventData(handle);
+                _reference = _data.get_FrameReference();
+                var frame = _reference.AcquireFrame();
+
+                _frame = frame;
+                _description = frame.get_FrameDescription();
+                Time = frame.get_RelativeTime();
+                UInt32 capacity;
+                _buffer = _frame.AccessRawUnderlyingBuffer(out capacity);
+            }
+            catch (COMException)
+            {
+                Dispose();
+            }
         }
 
         public void CopyConvertedFrameDataToArray(Int32 length, IntPtr data)
@@ -70,9 +93,28 @@ namespace UniKinect.V2PublicPreview
 
         protected override void OnDispose()
         {
-            Marshal.ReleaseComObject(_description);
-            Marshal.ReleaseComObject(_frame);
-            Marshal.ReleaseComObject(_reference);
+            if (_description != null)
+            {
+                Marshal.ReleaseComObject(_description);
+                _description = null;
+            }
+            if (_frame != null)
+            {
+                Marshal.ReleaseComObject(_frame);
+                _frame = null;
+            }
+            if (_reference != null)
+            {
+                Marshal.ReleaseComObject(_reference);
+                _reference = null;
+            }
+            if (_data != null)
+            {
+                Marshal.ReleaseComObject(_data);
+                _data = null;
+            }
+
+            --Counter;
         }
     }
 }

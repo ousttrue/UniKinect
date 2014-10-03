@@ -64,6 +64,7 @@ namespace SampleForm
                 StartUpdating(imageStream, imageWaitHandle, pictureBox1);
             }
 
+            if(false)
             {
                 var stream = new V2DepthStream(sensor.Sensor);
 
@@ -138,21 +139,21 @@ namespace SampleForm
             var task = waitHandle.WaitTask(Timeout.Infinite);
             task.ToObservable()
                 .ObserveOn(this)
-                .SelectMany(_ => Observable.Using(
-                    () => stream.GetFrame(waitHandle.Handle)
-                        , frame => Observable.Return(frame))
-                )
+                .Select(_ => stream.GetFrame(waitHandle.Handle))
                 .Where(frame => frame != null)
                 .Subscribe(
-                frame => target.Image = ImageToBitmap(frame)
+                frame =>
+                {
+                    target.Image = ImageToBitmap(frame);
+                    frame.Dispose();
+                }
                 , ex =>
                 {
                     Console.WriteLine(ex);
-                    StartUpdating(stream, waitHandle, target);
+                    Console.WriteLine(V2ImageFrame.Counter);
                 }
-                , () => StartUpdating(stream, waitHandle, target)
-                )
-                ;
+                , ()=> StartUpdating(stream, waitHandle, target)
+                );
         }
 
         #region ImageStream

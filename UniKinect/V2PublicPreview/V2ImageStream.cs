@@ -37,9 +37,10 @@ namespace UniKinect.V2PublicPreview
 
         public override KinectBaseImageFrame GetFrame()
         {
-            var frame = new V2ImageFrame(m_reader.AcquireLatestFrame(), null);
+            var frame = new V2ImageFrame(m_reader.AcquireLatestFrame());
             if (!NewTimeStamp(frame.Time))
             {
+                frame.Dispose();
                 return null;
             }
             return frame;
@@ -47,22 +48,13 @@ namespace UniKinect.V2PublicPreview
 
         public override KinectBaseImageFrame GetFrame(IntPtr handle)
         {
-            var data = m_reader.GetFrameArrivedEventData(handle);
-            var frameRef = data.get_FrameReference();
-            try
+            var frame = new V2ImageFrame(m_reader, handle);
+            if (!NewTimeStamp(frame.Time))
             {
-                var frame = new V2ImageFrame(frameRef.AcquireFrame(), frameRef);
-                if (!NewTimeStamp(frame.Time))
-                {
-                    frame.Dispose();
-                    return null;
-                }
-                return frame;
+                frame.Dispose();
+                return null;
             }
-            finally
-            {
-                Marshal.ReleaseComObject(data);
-            }
+            return frame;
         }
 
         protected override void OnDispose()
