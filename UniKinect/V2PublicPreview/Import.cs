@@ -47,40 +47,37 @@ namespace UniKinect.V2PublicPreview
         [return: MarshalAs(UnmanagedType.Interface)]
         IBodyFrameSource get_BodyFrameSource();
         
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IBodyIndexFrameSource get_BodyIndexFrameSource();
+        
 #if false
-        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_BodyIndexFrameSource( 
-            /* [annotation][out][retval] */ 
-            _COM_Outptr_  IBodyIndexFrameSource **bodyIndexFrameSource) = 0;
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IInfraredFrameSource get_InfraredFrameSource();
         
-        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_InfraredFrameSource( 
-            /* [annotation][out][retval] */ 
-            _COM_Outptr_  IInfraredFrameSource **infraredFrameSource) = 0;
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        ILongExposureInfraredFrameSource get_LongExposureInfraredFrameSource();
         
-        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_LongExposureInfraredFrameSource( 
-            /* [annotation][out][retval] */ 
-            _COM_Outptr_  ILongExposureInfraredFrameSource **longExposureInfraredFrameSource) = 0;
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IAudioSource get_AudioSource();
         
-        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_AudioSource( 
-            /* [annotation][out][retval] */ 
-            _COM_Outptr_  IAudioSource **audioSource) = 0;
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IMultiSourceFrameReader OpenMultiSourceFrameReader();
         
-        virtual HRESULT STDMETHODCALLTYPE OpenMultiSourceFrameReader( 
-            DWORD enabledFrameSourceTypes,
-            /* [annotation][out][retval] */ 
-            _COM_Outptr_  IMultiSourceFrameReader **multiSourceFrameReader) = 0;
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        ICoordinateMapper get_CoordinateMapper();
         
-        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_CoordinateMapper( 
-            /* [annotation][out][retval] */ 
-            _COM_Outptr_  ICoordinateMapper **coordinateMapper) = 0;
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.LPWStr)]
+        String get_UniqueKinectId(UInt32 bufferSize);
         
-        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_UniqueKinectId( 
-            UINT bufferSize,
-            /* [annotation][out][retval] */ 
-            _Out_writes_z_(bufferSize)  WCHAR *uniqueKinectId) = 0;
-        
-        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_KinectCapabilities( 
-            /* [annotation][out][retval] */ 
-            _Out_  DWORD *capabilities) = 0;
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        UInt32 get_KinectCapabilities();
 #endif
     }
 
@@ -665,6 +662,109 @@ namespace UniKinect.V2PublicPreview
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         TrackingState get_LeanTrackingState();
     };
+
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("010F2A40-DC58-44A5-8E57-329A583FEC08")]
+    public interface IBodyIndexFrameSource
+    {
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        IntPtr SubscribeFrameCaptured();
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        void UnsubscribeFrameCaptured(IntPtr waitableHandle);
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IFrameCapturedEventArgs GetFrameCapturedEventData(IntPtr waitableHandle);
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        Boolean get_IsActive();
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IBodyIndexFrameReader OpenReader();
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IFrameDescription get_FrameDescription();
+
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IKinectSensor get_KinectSensor();        
+    };
+
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("E9724AA1-EBFA-48F8-9044-E0BE33383B8B")]
+    public interface IBodyIndexFrameReader
+    {
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        IntPtr SubscribeFrameArrived();
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        void UnsubscribeFrameArrived(IntPtr waitableHandle);
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IBodyIndexFrameArrivedEventArgs GetFrameArrivedEventData(IntPtr waitableHandle);
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IBodyIndexFrame AcquireLatestFrame();
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        Boolean get_IsPaused();
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        void put_IsPaused(Boolean isPaused);
+
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IBodyIndexFrameSource get_BodyIndexFrameSource();        
+    };
+
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("10B7E92E-B4F2-4A36-A459-06B2A4B249DF")]
+    public interface IBodyIndexFrameArrivedEventArgs
+    {
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IBodyIndexFrameReference get_FrameReference();
+    };
+    
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("D0EA0519-F7E7-4B1E-B3D8-03B3C002795F")]
+    public interface IBodyIndexFrameReference
+    {    
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IBodyIndexFrame AcquireFrame();
+
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        Int64 get_RelativeTime();        
+    };
+
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("2CEA0C07-F90C-44DF-A18C-F4D18075EA6B")]
+    public interface IBodyIndexFrame
+    {
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        void CopyFrameDataToArray([In]UInt32 capacity, [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)]Byte[] frameData);
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        IntPtr AccessUnderlyingBuffer([Out]out UInt32 capacity);
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IFrameDescription get_FrameDescription();
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        Int64 get_RelativeTime();
+        
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IBodyIndexFrameSource get_BodyIndexFrameSource();        
+    };
+
 
     public static partial class Import
     {

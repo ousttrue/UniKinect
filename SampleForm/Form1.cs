@@ -70,6 +70,7 @@ namespace SampleForm
                 StartUpdating(stream, waitHandle, assignFrame);
             }
 
+            /*
             {
                 var stream = new V2DepthStream(sensor.Sensor);
 
@@ -77,15 +78,32 @@ namespace SampleForm
                 waitHandle.SafeWaitHandle = new Microsoft.Win32.SafeHandles.SafeWaitHandle(
                     stream.CreateWaitHandle(), false);
 
-                var buffer = new Int16[stream.Width * stream.Height];
                 var bitmap = new Bitmap(stream.Width, stream.Height);
                 Action<KinectBaseImageFrame> assignFrame = frame =>
                 {
                     Marshal.Copy(frame.Buffer, buffer, 0, buffer.Length);
                     bitmap.SetPixels(buffer.SelectMany(d => DepthToPixel(d)).ToArray());
-                    /*
                     pictureBox2.Image = bitmap;
-                    */
+                };
+
+                StartUpdating(stream, waitHandle, assignFrame);
+            }
+            */
+
+            {
+                var stream = new V2BodyIndexStream(sensor.Sensor);
+
+                var waitHandle = new ManualResetEvent(false);
+                waitHandle.SafeWaitHandle = new Microsoft.Win32.SafeHandles.SafeWaitHandle(
+                    stream.CreateWaitHandle(), false);
+
+                var buffer = new Byte[stream.Width * stream.Height];
+                var bitmap = new Bitmap(stream.Width, stream.Height, PixelFormat.Format8bppIndexed);
+                Action<KinectBaseImageFrame> assignFrame = frame =>
+                {
+                    Marshal.Copy(frame.Buffer, buffer, 0, buffer.Length);
+                    bitmap.SetPixels(buffer);
+                    pictureBox2.Image = bitmap;
                 };
 
                 StartUpdating(stream, waitHandle, assignFrame);

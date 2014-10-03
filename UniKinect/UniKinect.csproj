@@ -54,6 +54,8 @@
     <Compile Include="V2PublicPreview\V2BaseImageFrame.cs" />
     <Compile Include="V2PublicPreview\V2Body.cs" />
     <Compile Include="V2PublicPreview\V2BodyFrame.cs" />
+    <Compile Include="V2PublicPreview\V2BodyIndexFrame.cs" />
+    <Compile Include="V2PublicPreview\V2BodyIndexStream.cs" />
     <Compile Include="V2PublicPreview\V2BodyStream.cs" />
     <Compile Include="V2PublicPreview\V2DepthFrame.cs" />
     <Compile Include="V2PublicPreview\V2DepthStream.cs" />
