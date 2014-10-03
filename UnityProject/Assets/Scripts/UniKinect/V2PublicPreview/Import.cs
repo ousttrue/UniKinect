@@ -140,8 +140,8 @@ namespace UniKinect.V2PublicPreview
         void UnsubscribeFrameArrived(IntPtr waitableHandle);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        [return: MarshalAs(UnmanagedType.IUnknown)]
-        Object GetFrameArrivedEventData(IntPtr waitableHandle);
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IColorFrameArrivedEventArgs GetFrameArrivedEventData(IntPtr waitableHandle);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [return: MarshalAs(UnmanagedType.Interface)]
@@ -158,6 +158,27 @@ namespace UniKinect.V2PublicPreview
         [return: MarshalAs(UnmanagedType.Interface)]
         IColorFrameSource get_ColorFrameSource();
     }
+
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("82A2E32F-4AE5-4614-88BB-DCC5AE0CEAED")]
+    public interface IColorFrameArrivedEventArgs
+    {
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IColorFrameReference get_FrameReference();
+    };
+
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("5CC49E38-9BBD-48BE-A770-FD30EA405247")]
+    public interface IColorFrameReference
+    {
+        //[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IColorFrame AcquireFrame();
+
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        Int64 get_RelativeTime();        
+    };
 
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport, Guid("39D05803-8803-4E86-AD9F-13F6954E4ACA")]
