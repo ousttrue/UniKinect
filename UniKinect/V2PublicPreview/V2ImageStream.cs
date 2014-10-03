@@ -30,62 +30,35 @@ namespace UniKinect.V2PublicPreview
             _height = frameDesc.get_Height();
         }
 
-        IntPtr waitHandle;
         public IntPtr CreateWaitHandle()
         {
-            if (waitHandle != null)
-            {
-
-            }
-            waitHandle=m_reader.SubscribeFrameArrived();
-            return waitHandle;
+            return m_reader.SubscribeFrameArrived();
         }
 
-        IColorFrameArrivedEventArgs m_data;
-        IColorFrameReference m_frameRef;
         public override KinectBaseImageFrame GetFrame()
         {
-            try
+            var frame = new V2ImageFrame(m_reader.AcquireLatestFrame());
+            if (!NewTimeStamp(frame.Time))
             {
-                if (waitHandle != null)
-                {
-                    m_data = m_reader.GetFrameArrivedEventData(waitHandle);
-                    m_frameRef = m_data.get_FrameReference();
-                    var frame = new V2ImageFrame(m_frameRef.AcquireFrame());
-                    if (!NewTimeStamp(frame.Time))
-                    {
-                        return null;
-                    }
-                    return frame;
-                }
-                else
-                {
-                    var frame = new V2ImageFrame(m_reader.AcquireLatestFrame());
-                    if (!NewTimeStamp(frame.Time))
-                    {
-                        return null;
-                    }
-                    return frame;
-                }
-            }
-            catch (COMException ex)
-            {
-                if ((UInt32)ex.ErrorCode == 0x8000000A)
-                {
-
-                }
-                else
-                {
-                    Console.WriteLine(ex);
-                }
+                frame.Dispose();
                 return null;
             }
+            return frame;
+        }
+
+        public override KinectBaseImageFrame GetFrame(IntPtr handle)
+        {
+            var frame = new V2ImageFrame(m_reader, handle);
+            if (!NewTimeStamp(frame.Time))
+            {
+                frame.Dispose();
+                return null;
+            }
+            return frame;
         }
 
         protected override void OnDispose()
         {
-            Marshal.ReleaseComObject(m_frameRef);
-            Marshal.ReleaseComObject(m_data);
             Marshal.ReleaseComObject(m_reader);
             Marshal.ReleaseComObject(m_source);
         }

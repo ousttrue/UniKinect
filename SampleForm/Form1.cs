@@ -18,6 +18,11 @@ using UniKinect.Nui;
 // V2
 using UniKinect.V2PublicPreview;
 #endif
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
+
 
 namespace SampleForm
 {
@@ -37,6 +42,7 @@ namespace SampleForm
             _skeletonWaitHandle = new ManualResetEvent(false);
 
 #if false
+            // v1
             _sensor = new KinectSensor();
 
             _imageStream = KinectImageStream.CreateImageStream(_imageWaitHandle.Handle);
@@ -44,19 +50,30 @@ namespace SampleForm
             _skeletonStream = new KinectSkeletonStream(_skeletonWaitHandle.Handle);
             dataGridView2.DataSource = _skeletons;
 #else
+            // v2
             var sensor = new V2Sensor();
             _sensor = sensor;
 
-            var imageStream = new V2ImageStream(sensor.Sensor);
-            _imageStream = imageStream;
-            //_imageWaitHandle=new HandleHolder(imageStream.CreateWaitHandle());
-            _imageWaitHandle = new ManualResetEvent(false);
-            _imageWaitHandle.SafeWaitHandle = new Microsoft.Win32.SafeHandles.SafeWaitHandle(
-                imageStream.CreateWaitHandle(), false);
+            {
+                var imageStream = new V2ImageStream(sensor.Sensor);
 
-            //var depthStream=new V2DepthStream(sensor.Sensor);
-            //_depthStream = depthStream;
-            //_depthWaitHandle = new HandleHolder(depthStream.CreateWaitHandle());
+                var imageWaitHandle = new ManualResetEvent(false);
+                imageWaitHandle.SafeWaitHandle = new Microsoft.Win32.SafeHandles.SafeWaitHandle(
+                    imageStream.CreateWaitHandle(), false);
+
+                StartUpdating(imageStream, imageWaitHandle, pictureBox1);
+            }
+
+            if(false)
+            {
+                var stream = new V2DepthStream(sensor.Sensor);
+
+                var waitHandle = new ManualResetEvent(false);
+                waitHandle.SafeWaitHandle = new Microsoft.Win32.SafeHandles.SafeWaitHandle(
+                    stream.CreateWaitHandle(), false);
+
+                StartUpdating(stream, waitHandle, pictureBox2);
+            }
 #endif
         }
 
@@ -72,8 +89,12 @@ namespace SampleForm
                 , _depthWaitHandle 
                 , _skeletonWaitHandle
             };
+        }
 
-            WaitUpdate(handles);
+        bool _closing;
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _closing = true;
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -108,39 +129,32 @@ namespace SampleForm
             }
         }
 
-        void WaitUpdate(WaitHandle[] handles)
+        void StartUpdating(KinectBaseImageStream stream, WaitHandle waitHandle, PictureBox target)
         {
-            var task = Task.Factory.StartNew(() =>
+            if (_closing)
             {
-                try
+                Console.WriteLine("closing...");
+                return;
+            }
+            var task = waitHandle.WaitTask(Timeout.Infinite);
+            task.ToObservable()
+                .ObserveOn(this)
+                .Select(_ => stream.GetFrame(waitHandle.Handle))
+                .Where(frame => frame != null)
+                .Subscribe(
+                frame =>
                 {
-                    var index = WaitHandle.WaitAny(handles);
-                    Action next = () =>
-                    {
-                        WaitUpdate(handles);
-                    };
-
-                    switch (index)
-                    {
-                        case 0:
-                            UpdatePictureBox(_imageStream, ImageToBitmap, pictureBox1, next);
-                            break;
-
-                        case 1:
-                            UpdatePictureBox(_depthStream, DepthToBitmap, pictureBox2, next);
-                            break;
-
-                        case 2:
-                            //UpdateSkeleton(_skeletonStream);
-                            break;
-                    }
-
+                    target.Image = ImageToBitmap(frame);
+                    ColorFps = stream.FPS;
+                    frame.Dispose();
                 }
-                catch (ObjectDisposedException)
+                , ex =>
                 {
-                    Console.WriteLine("disposed");
+                    Console.WriteLine(ex);
+                    Console.WriteLine(V2ImageFrame.Counter);
                 }
-            });
+                , ()=> StartUpdating(stream, waitHandle, target)
+                );
         }
 
         #region ImageStream
@@ -204,10 +218,10 @@ namespace SampleForm
             var color = ColorMap[player];
 
             return new Byte[]{
-                (Byte)(color.B * depth / MaxDepth)
-                , (Byte)(color.G * depth / MaxDepth)
-                , (Byte)(color.R * depth / MaxDepth)
-                , 255
+                255
+                , (Byte)(depth / MaxDepth)
+                , (Byte)(depth / MaxDepth)
+                , (Byte)(depth / MaxDepth)
             };
         }
 
@@ -246,45 +260,11 @@ namespace SampleForm
                 }
             }
         }
-
-        void UpdatePictureBox(KinectBaseImageStream src, Func<KinectBaseImageFrame, Bitmap> converter, PictureBox dst, Action next)
-        {
-            Action action = () =>
-            {
-                using (var frame = src.GetFrame())
-                {
-                    if (frame == null)
-                    {
-                        return;
-                    }
-                    var converted = converter(frame);
-
-                    // draw fps
-                    using (Graphics g = Graphics.FromImage(converted))
-                    {
-
-                        RectangleF rect = new RectangleF(0, 0, 200, 60);
-
-                        //var fps = String.Format("{0}", src.FPS);
-                        //g.DrawString(fps, _font, Brushes.Yellow, rect);
-                        ColorFps = src.FPS;
-
-                        //BeginInvoke(new SetBitmapDelegate((Bitmap bitmap) =>
-                        {
-                            dst.Image = converted;
-
-                        }
-                        //), new Object[] { converted });
-                    }
-                }
-                next();
-            };
-            BeginInvoke(action);
-        }
         #endregion
 
         ManualResetEvent _skeletonWaitHandle;
         KinectBaseStream _skeletonStream;
+
         /*
         #region SkeletonStream
 

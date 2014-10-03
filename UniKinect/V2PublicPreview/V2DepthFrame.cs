@@ -8,6 +8,7 @@ namespace UniKinect.V2PublicPreview
         Boolean _initialized;
 
         IDepthFrame _frame;
+        IDepthFrameReference _reference;
 
         IFrameDescription _description;
 
@@ -17,10 +18,12 @@ namespace UniKinect.V2PublicPreview
             private set;
         }
 
-        UInt32 _bufferSize;
-        public UInt32 BufferSize
+        public override Int32 BufferSize
         {
-            get { return _bufferSize; }
+            get
+            {
+                return Pitch * Height;
+            }
         }
 
         IntPtr _buffer;
@@ -31,7 +34,7 @@ namespace UniKinect.V2PublicPreview
 
         public override int Pitch
         {
-            get { return (int)(BufferSize/Height); }
+            get { return (Int32)BytesPerPixel * Width; }
         }
 
         public UInt32 BytesPerPixel
@@ -50,20 +53,22 @@ namespace UniKinect.V2PublicPreview
         }
 
 
-        public V2DepthFrame(IDepthFrame frame)
+        public V2DepthFrame(IDepthFrame frame, IDepthFrameReference reference)
         {
             _frame = frame;
+            _reference = reference;
             _initialized = true;
             _description = frame.get_FrameDescription();
             Time = frame.get_RelativeTime();
-            _buffer = _frame.AccessUnderlyingBuffer(out _bufferSize);
+            UInt32 capacity;
+            _buffer = _frame.AccessUnderlyingBuffer(out capacity);
         }
 
         protected override void OnDispose()
         {
-            // Free any other managed objects here.
             Marshal.ReleaseComObject(_description);
             Marshal.ReleaseComObject(_frame);
+            Marshal.ReleaseComObject(_reference);
         }
     }
 }

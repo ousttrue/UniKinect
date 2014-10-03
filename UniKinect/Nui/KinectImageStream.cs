@@ -75,19 +75,17 @@ namespace UniKinect.Nui
 
         public override KinectBaseImageFrame GetFrame()
         {
-            try
-            {
-                var frame = new KInectImageFrame(_phStreamHandle);
-                if (!NewTimeStamp(frame.Frame.liTimeStamp))
-                {
-                    return null;
-                }
-                return frame;
-            }
-            catch(COMException ex)
+            var frame = new KInectImageFrame(_phStreamHandle);
+            if (!NewTimeStamp(frame.Frame.liTimeStamp))
             {
                 return null;
             }
+            return frame;
+        }
+
+        public override KinectBaseImageFrame GetFrame(IntPtr handle)
+        {
+            return GetFrame();
         }
     }
 }
