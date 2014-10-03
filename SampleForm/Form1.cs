@@ -145,6 +145,7 @@ namespace SampleForm
                 frame =>
                 {
                     target.Image = ImageToBitmap(frame);
+                    ColorFps = stream.FPS;
                     frame.Dispose();
                 }
                 , ex =>
