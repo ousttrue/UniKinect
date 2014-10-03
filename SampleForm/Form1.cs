@@ -70,8 +70,6 @@ namespace SampleForm
                 StartUpdating(stream, waitHandle, assignFrame);
             }
 
-
-            /*
             {
                 var stream = new V2DepthStream(sensor.Sensor);
 
@@ -85,12 +83,13 @@ namespace SampleForm
                 {
                     Marshal.Copy(frame.Buffer, buffer, 0, buffer.Length);
                     bitmap.SetPixels(buffer.SelectMany(d => DepthToPixel(d)).ToArray());
+                    /*
                     pictureBox2.Image = bitmap;
+                    */
                 };
 
                 StartUpdating(stream, waitHandle, assignFrame);
             }
-            */
 #endif
         }
 
@@ -148,7 +147,6 @@ namespace SampleForm
                 , ex =>
                 {
                     Console.WriteLine(ex);
-                    Console.WriteLine(V2ImageFrame.Counter);
                 }
                 , ()=> StartUpdating(stream, waitHandle, assignFrame)
                 );

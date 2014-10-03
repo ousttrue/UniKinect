@@ -51,6 +51,7 @@
     <Compile Include="Nui\Import.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="V2PublicPreview\Import.cs" />
+    <Compile Include="V2PublicPreview\V2BaseImageFrame.cs" />
     <Compile Include="V2PublicPreview\V2Body.cs" />
     <Compile Include="V2PublicPreview\V2BodyFrame.cs" />
     <Compile Include="V2PublicPreview\V2BodyStream.cs" />
