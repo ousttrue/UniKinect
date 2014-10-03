@@ -8,6 +8,7 @@ namespace UniKinect.V2PublicPreview
         IColorFrame _frame;
 
         IFrameDescription _description;
+        IColorFrameReference _reference;
 
         public Int64 Time
         {
@@ -20,10 +21,9 @@ namespace UniKinect.V2PublicPreview
             get { return _frame.get_RawColorImageFormat(); }
         }
 
-        UInt32 _bufferSize;
-        public UInt32 BufferSize
+        public override Int32 BufferSize
         {
-            get { return _bufferSize; }
+            get { return Pitch*Height; }
         }
 
         IntPtr _buffer;
@@ -34,7 +34,7 @@ namespace UniKinect.V2PublicPreview
 
         public override int Pitch
         {
-            get { return (int)(BufferSize / Height); }
+            get { return (int)(Width * BytesPerPixel); }
         }
 
         public UInt32 BytesPerPixel
@@ -53,12 +53,14 @@ namespace UniKinect.V2PublicPreview
         }
 
 
-        public V2ImageFrame(IColorFrame frame)
+        public V2ImageFrame(IColorFrame frame, IColorFrameReference reference)
         {
             _frame = frame;
+            _reference = reference;
             _description = frame.get_FrameDescription();
             Time = frame.get_RelativeTime();
-            _buffer = _frame.AccessRawUnderlyingBuffer(out _bufferSize);
+            UInt32 capacity;
+            _buffer = _frame.AccessRawUnderlyingBuffer(out capacity);
         }
 
         public void CopyConvertedFrameDataToArray(Int32 length, IntPtr data)
@@ -68,9 +70,9 @@ namespace UniKinect.V2PublicPreview
 
         protected override void OnDispose()
         {
-            // Free any other managed objects here.
             Marshal.ReleaseComObject(_description);
             Marshal.ReleaseComObject(_frame);
+            Marshal.ReleaseComObject(_reference);
         }
     }
 }

@@ -23,6 +23,11 @@ namespace UniKinect.Nui
             get { return Rect.pBits; }
         }
 
+        public override Int32 BufferSize
+        {
+            get { return Rect.size; }
+        }
+
         public override int Pitch
         {
             get { return Rect.pitch; }

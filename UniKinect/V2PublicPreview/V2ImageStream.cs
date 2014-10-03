@@ -30,62 +30,43 @@ namespace UniKinect.V2PublicPreview
             _height = frameDesc.get_Height();
         }
 
-        IntPtr waitHandle;
         public IntPtr CreateWaitHandle()
         {
-            if (waitHandle != null)
-            {
-
-            }
-            waitHandle=m_reader.SubscribeFrameArrived();
-            return waitHandle;
+            return m_reader.SubscribeFrameArrived();
         }
 
-        IColorFrameArrivedEventArgs m_data;
-        IColorFrameReference m_frameRef;
         public override KinectBaseImageFrame GetFrame()
         {
+            var frame = new V2ImageFrame(m_reader.AcquireLatestFrame(), null);
+            if (!NewTimeStamp(frame.Time))
+            {
+                return null;
+            }
+            return frame;
+        }
+
+        public override KinectBaseImageFrame GetFrame(IntPtr handle)
+        {
+            var data = m_reader.GetFrameArrivedEventData(handle);
+            var frameRef = data.get_FrameReference();
             try
             {
-                if (waitHandle != null)
+                var frame = new V2ImageFrame(frameRef.AcquireFrame(), frameRef);
+                if (!NewTimeStamp(frame.Time))
                 {
-                    m_data = m_reader.GetFrameArrivedEventData(waitHandle);
-                    m_frameRef = m_data.get_FrameReference();
-                    var frame = new V2ImageFrame(m_frameRef.AcquireFrame());
-                    if (!NewTimeStamp(frame.Time))
-                    {
-                        return null;
-                    }
-                    return frame;
+                    frame.Dispose();
+                    return null;
                 }
-                else
-                {
-                    var frame = new V2ImageFrame(m_reader.AcquireLatestFrame());
-                    if (!NewTimeStamp(frame.Time))
-                    {
-                        return null;
-                    }
-                    return frame;
-                }
+                return frame;
             }
-            catch (COMException ex)
+            finally
             {
-                if ((UInt32)ex.ErrorCode == 0x8000000A)
-                {
-
-                }
-                else
-                {
-                    Console.WriteLine(ex);
-                }
-                return null;
+                Marshal.ReleaseComObject(data);
             }
         }
 
         protected override void OnDispose()
         {
-            Marshal.ReleaseComObject(m_frameRef);
-            Marshal.ReleaseComObject(m_data);
             Marshal.ReleaseComObject(m_reader);
             Marshal.ReleaseComObject(m_source);
         }

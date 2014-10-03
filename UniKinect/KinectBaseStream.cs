@@ -97,5 +97,6 @@ namespace UniKinect
         }
 
         public abstract KinectBaseImageFrame GetFrame();
+        public abstract KinectBaseImageFrame GetFrame(IntPtr handle);
     }
 }
