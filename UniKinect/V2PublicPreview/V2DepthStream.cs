@@ -26,6 +26,7 @@ namespace UniKinect.V2PublicPreview
             m_reader = m_source.OpenReader();
 
             var frameDesc=m_source.get_FrameDescription();
+            _bytesPerPixel = (Int32)frameDesc.get_BytesPerPixel();
         }
 
         public IntPtr CreateWaitHandle()

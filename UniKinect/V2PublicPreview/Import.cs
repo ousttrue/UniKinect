@@ -198,7 +198,7 @@ namespace UniKinect.V2PublicPreview
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void CopyConvertedFrameDataToArray(Int32 capacity
-            , IntPtr frameData
+            , [MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)]Byte[] frameData
             , ColorImageFormat colorFormat);
 
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -765,6 +765,26 @@ namespace UniKinect.V2PublicPreview
         IBodyIndexFrameSource get_BodyIndexFrameSource();        
     };
 
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("EF1FE50F-641C-4FB8-B7BA-C2A8295E1C74")]
+    public interface IKinectSensorCollection
+    {
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IEnumKinectSensor get_Enumerator();       
+    }
+
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("E7DEB409-8F82-4D72-9F91-2BB1D2025DC4")]
+    public interface IEnumKinectSensor
+    {
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        IKinectSensor GetNext();
+
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        void Reset();   
+    }
 
     public static partial class Import
     {
@@ -772,6 +792,11 @@ namespace UniKinect.V2PublicPreview
         public const Int32 BodyCount = 6;
 
         [DllImport(DllPath, PreserveSig = true, CallingConvention = CallingConvention.Winapi)]
-        public static extern Int32 GetDefaultKinectSensor([MarshalAs(UnmanagedType.Interface)]out IKinectSensor sensor);
+        public static extern Int32 GetDefaultKinectSensor(
+            [MarshalAs(UnmanagedType.Interface)]out IKinectSensor sensor);
+
+        [DllImport(DllPath, CallingConvention = CallingConvention.Winapi)]
+        public static extern Int32 GetKinectSensorCollection(
+            [MarshalAs(UnmanagedType.Interface)]out IKinectSensorCollection kinectSensorCollection);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 
@@ -6,9 +7,26 @@ namespace UniKinect.Nui
 {
     public class KinectSensor : KinectBaseSensor
     {
+        public override int ApiVersion
+        {
+            get { return 1; }
+        }
         INuiSensor _sensor;
 
 #region ColorImage
+        public override System.Collections.Generic.IEnumerable<KinectImageResolution> ColorImageResolutions
+        {
+            get
+            {
+                return new List<KinectImageResolution>
+                {
+                    KinectImageResolution.None,
+                    KinectImageResolution.Resolution_640x480,
+                    KinectImageResolution.Resolution_1280x960,
+                };
+            }
+        }
+
         KinectImageStream _colorImageStream;
         public override KinectBaseImageStream ColorImageStream
         {
@@ -61,6 +79,19 @@ namespace UniKinect.Nui
 #endregion
 
 #region DepthImage
+        public override IEnumerable<KinectImageResolution> DepthImageResolutions
+        {
+            get {
+                return new List<KinectImageResolution>
+                {
+                    KinectImageResolution.None,
+                    KinectImageResolution.Resolution_80x60,
+                    KinectImageResolution.Resolution_320x240,
+                    KinectImageResolution.Resolution_640x480,
+                };
+            }
+        }
+
         public KinectImageStream _depthImageStream;
         public override KinectBaseImageStream DepthImageStream
         {

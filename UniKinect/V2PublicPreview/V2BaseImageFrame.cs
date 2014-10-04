@@ -22,7 +22,7 @@ namespace UniKinect.V2PublicPreview
         }
 
         protected IntPtr _buffer;
-        public override IntPtr Buffer
+        public override IntPtr Ptr
         {
             get { return _buffer; }
         }
@@ -49,5 +49,11 @@ namespace UniKinect.V2PublicPreview
         {
             get { return _height; }
         }
+
+        public override int ApiVersion
+        {
+            get { return 2; }
+        }
+
     }
 }

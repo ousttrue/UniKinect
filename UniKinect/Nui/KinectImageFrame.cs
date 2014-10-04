@@ -5,6 +5,11 @@ namespace UniKinect.Nui
 {
     public class KInectImageFrame : KinectBaseImageFrame
     {
+        public override int ApiVersion
+        {
+            get { return 1; }
+        }
+
         IntPtr _phStreamHandle;
         IntPtr _imageFramePtr;
         Nui.NuiLockedRect _rect = new Nui.NuiLockedRect();
@@ -18,9 +23,15 @@ namespace UniKinect.Nui
             private set;
         }
 
-        public override IntPtr Buffer
+        public override IntPtr Ptr
         {
             get { return Rect.pBits; }
+        }
+
+
+        public override void CopyTo(byte[] buffer)
+        {
+            Marshal.Copy(Ptr, buffer, 0, buffer.Length);
         }
 
         public override Int32 BufferSize
@@ -73,5 +84,6 @@ namespace UniKinect.Nui
             // Free any other managed objects here.
             Nui.Import.NuiImageStreamReleaseFrame(_phStreamHandle, _imageFramePtr);
         }
+
     }
 }

@@ -44,6 +44,11 @@ namespace UniKinect.V2PublicPreview
             _height = _description.get_Height();
         }
 
+        public override void CopyTo(byte[] buffer)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void OnDispose()
         {
             if (_description != null)

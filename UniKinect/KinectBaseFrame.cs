@@ -4,6 +4,8 @@ namespace UniKinect
 {
     public abstract class KinectBaseFrame: IDisposable
     {
+        public abstract Int32 ApiVersion { get; }
+
         // Flag: Has Dispose already been called?
         bool disposed = false;
 
@@ -39,7 +41,8 @@ namespace UniKinect
         public abstract Int32 BytesPerPixel { get; }
         public abstract Int32 Width { get; }
         public abstract Int32 Height { get; }
-        public abstract IntPtr Buffer { get; }
+        public abstract IntPtr Ptr { get; }
         public abstract Int32 BufferSize { get; }
+        public abstract void CopyTo(Byte[] buffer);
     }
 }

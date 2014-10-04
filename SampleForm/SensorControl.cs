@@ -65,22 +65,9 @@ namespace SampleForm
 
                 DisposeSensor();
 
-                colorImageResolutions.DataSource = new List<KinectImageResolution>
-                {
-                    KinectImageResolution.None,
-                    KinectImageResolution.Resolution_640x480,
-                    KinectImageResolution.Resolution_1280x960,
-                };
-
-                depthResolutions.DataSource = new List<KinectImageResolution>
-                {
-                    KinectImageResolution.None,
-                    KinectImageResolution.Resolution_80x60,
-                    KinectImageResolution.Resolution_320x240,
-                    KinectImageResolution.Resolution_640x480,
-                };
-
                 _sensor = value;
+                colorImageResolutions.DataSource = _sensor.ColorImageResolutions;
+                depthResolutions.DataSource = _sensor.DepthImageResolutions;
                 _sensor.Initialize();
             }
         }
@@ -127,7 +114,7 @@ namespace SampleForm
             var buffer=new Byte[resolution.Width() * resolution.Height() *4 ];
             Action<KinectBaseImageFrame> UpdatePictureBox = frame =>
             {
-                Marshal.Copy(frame.Buffer, buffer, 0, buffer.Length);
+                frame.CopyTo(buffer);
                 bitmap.SetPixels(buffer);
                 pictureBoxForImage.Image = bitmap;
             };
@@ -170,7 +157,7 @@ namespace SampleForm
             DisposeDepthHandler();
 
             // new
-            StartDepthHandler(resolution);
+            StartDepthHandler(_sensor.ApiVersion, resolution);
         }
 
         IDisposable _depthHandler;
@@ -184,24 +171,96 @@ namespace SampleForm
             _depthHandler = null;
         }
 
-        void StartDepthHandler(KinectImageResolution resolution)
+        Color[] ColorMap = new Color[]{
+            Color.White,
+            Color.Red,
+            Color.Green,
+            Color.Blue,
+            Color.Cyan,
+            Color.Magenta,
+            Color.Yellow,
+        };
+
+        int _tmpMaxDepth;
+        Byte[] DepthToPixelWithIndex(Int32 depth)
+        {
+            var player = depth & 0x7;
+
+            depth = depth >> 3;
+            if (depth > _tmpMaxDepth)
+            {
+                _tmpMaxDepth = depth;
+            }
+
+            var color = ColorMap[player];
+
+            return new Byte[]{
+                255
+                , (Byte)(depth / MaxDepth)
+                , (Byte)(depth / MaxDepth)
+                , (Byte)(depth / MaxDepth)
+            };
+        }
+
+        Int32 MaxDepth
+        {
+            get;
+            set;
+        }
+
+        void StartDepthHandler(Int32 apiVersion, KinectImageResolution resolution)
         {
             var bitmap = new Bitmap(resolution.Width(), resolution.Height());
             var buffer = new Int16[resolution.Width() * resolution.Height()];
-            Action<KinectBaseImageFrame> UpdatePictureBox = frame =>
+            Action<KinectBaseImageFrame> UpdatePictureBox;
+
+            if (apiVersion == 1)
             {
-                Marshal.Copy(frame.Buffer, buffer, 0, buffer.Length);
-                bitmap.SetPixels(buffer.SelectMany(d => {
-                    var depth=((Int32)d)>>3;
-                    return new Byte[]{
+                UpdatePictureBox = frame =>
+                {
+                    Marshal.Copy(frame.Ptr, buffer, 0, buffer.Length);
+                    bitmap.SetPixels(buffer.SelectMany(d =>
+                    {
+                        var depth = ((Int32)d) >> 3;
+                        return new Byte[]{
                         (Byte)depth
                         , (Byte)depth
                         , (Byte)depth
                         , (Byte)depth
                     };
-                }).ToArray());
-                pictureBoxForDepth.Image = bitmap;
-            };
+                    }).ToArray());
+                    pictureBoxForDepth.Image = bitmap;
+                    if (_tmpMaxDepth > MaxDepth)
+                    {
+                        MaxDepth = _tmpMaxDepth;
+                    }
+                };
+            }
+            else if(apiVersion==2)
+            {
+                UpdatePictureBox = frame =>
+                {
+                    Marshal.Copy(frame.Ptr, buffer, 0, buffer.Length);
+                    bitmap.SetPixels(buffer.SelectMany(d =>
+                    {
+                        return new Byte[]{
+                        (Byte)d
+                        , (Byte)d
+                        , (Byte)d
+                        , (Byte)d
+                    };
+                    }).ToArray());
+                    pictureBoxForDepth.Image = bitmap;
+                    if (_tmpMaxDepth > MaxDepth)
+                    {
+                        MaxDepth = _tmpMaxDepth;
+                    }
+                };
+            }
+            else
+            {
+                throw new ArgumentException("apiVersion");
+            }
 
             _depthHandler = _timerEvent
                 .Where(_ => _sensor.DepthImageStream != null)

@@ -67,5 +67,10 @@ namespace UniKinect.V2PublicPreview
                 _data = null;
             }
         }
+
+        public override void CopyTo(byte[] buffer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

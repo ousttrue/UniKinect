@@ -28,6 +28,12 @@ namespace UniKinect.V2PublicPreview
             _height=_description.get_Height();
         }
 
+        public override void CopyTo(byte[] buffer)
+        {
+            _frame.CopyConvertedFrameDataToArray(buffer.Length, buffer
+                , ColorImageFormat.ColorImageFormat_Bgra);
+        }
+
         public V2ImageFrame(IColorFrameReader reader, IntPtr handle)
         {
             try
@@ -40,11 +46,6 @@ namespace UniKinect.V2PublicPreview
             {
                 Dispose();
             }
-        }
-
-        public void CopyConvertedFrameDataToArray(Int32 length, IntPtr data)
-        {
-            _frame.CopyConvertedFrameDataToArray(length, data, ColorImageFormat.ColorImageFormat_Bgra);
         }
 
         protected override void OnDispose()

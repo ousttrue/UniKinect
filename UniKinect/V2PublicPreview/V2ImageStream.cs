@@ -25,8 +25,6 @@ namespace UniKinect.V2PublicPreview
             m_reader = m_source.OpenReader();
 
             var frameDesc=m_source.get_FrameDescription();
-            //_width = frameDesc.get_Width();
-            //_height = frameDesc.get_Height();
             _bytesPerPixel=(Int32)frameDesc.get_BytesPerPixel();
         }
 

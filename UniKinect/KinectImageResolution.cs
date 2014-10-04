@@ -58,6 +58,12 @@ namespace UniKinect
                 case KinectImageResolution.Resolution_1280x960:
                     return 1280;
 
+                case KinectImageResolution.Resolution_512x424:
+                    return 512;
+
+                case KinectImageResolution.Resolution_1920x1080:
+                    return 1920;
+
                 default:
                     return 0;
             }
@@ -78,6 +84,12 @@ namespace UniKinect
 
                 case KinectImageResolution.Resolution_1280x960:
                     return 960;
+
+                case KinectImageResolution.Resolution_512x424:
+                    return 424;
+
+                case KinectImageResolution.Resolution_1920x1080:
+                    return 1080;
 
                 default:
                     return 0;

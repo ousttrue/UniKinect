@@ -41,7 +41,7 @@ namespace SampleWpf
 
         public MainWindow()
         {
-            var sensor = new V2Sensor();
+            var sensor = V2Sensor.GetDefault();
             _sensor = sensor;
 
 #if true
@@ -98,7 +98,7 @@ namespace SampleWpf
                 .Subscribe(
                 frame => _depthSource.WritePixels(
                         new Int32Rect(0, 0, frame.Width, frame.Height),
-                        frame.Buffer,
+                        frame.Ptr,
                         frame.BufferSize,
                         frame.Pitch)
                 , ex => {
