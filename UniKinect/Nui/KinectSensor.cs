@@ -239,5 +239,22 @@ namespace UniKinect.Nui
             Console.WriteLine("Stop...");
             _sensor.NuiShutdown();
         }
+
+        public override KinectImageResolution IndexImageResolution
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override KinectBaseImageStream IndexImageStream
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

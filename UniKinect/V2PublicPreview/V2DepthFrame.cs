@@ -34,7 +34,7 @@ namespace UniKinect.V2PublicPreview
         {
             _frame = frame;
             _description = frame.get_FrameDescription();
-            Time = frame.get_RelativeTime();
+            _time = frame.get_RelativeTime();
             UInt32 capacity;
             _buffer = _frame.AccessUnderlyingBuffer(out capacity);
 

@@ -6,6 +6,7 @@ using UniKinect;
 using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 
 namespace SampleForm
@@ -147,6 +148,10 @@ namespace SampleForm
                 resolution = (KinectImageResolution)depthResolutions.SelectedItem;
             }
             _sensor.DepthImageResolution = resolution;
+            if (_sensor.ApiVersion == 2)
+            {
+                _sensor.IndexImageResolution = resolution;
+            }
             if (resolution == KinectImageResolution.None)
             {
                 return;
@@ -223,11 +228,11 @@ namespace SampleForm
         {
             var bitmap = new Bitmap(resolution.Width(), resolution.Height());
             var buffer = new Int16[resolution.Width() * resolution.Height()];
-            Action<KinectBaseImageFrame> UpdatePictureBox;
+
 
             if (apiVersion == 1)
             {
-                UpdatePictureBox = frame =>
+                Action<KinectBaseImageFrame> UpdatePictureBox = frame =>
                 {
                     Marshal.Copy(frame.Ptr, buffer, 0, buffer.Length);
                     bitmap.SetPixels(buffer.SelectMany(d =>
@@ -255,46 +260,92 @@ namespace SampleForm
                         MaxDepth = _tmpMaxDepth;
                     }
                 };
+                _depthHandler = _timerEvent
+                    .Where(_ => _sensor.DepthImageStream != null)
+                    .Subscribe(_ => Observable.Using(
+                        () => _sensor.DepthImageStream.GetFrame()
+                        , frame => Observable.Return(frame)
+                        )
+                        .Where(frame => frame != null)
+                        .Subscribe(
+                            frame => UpdatePictureBox(frame)
+                            , ex => Console.WriteLine("error")
+                        )
+                    )
+                    ;
             }
             else if(apiVersion==2)
             {
-                UpdatePictureBox = frame =>
+                Action<IEnumerable<Int16>, Byte[]> UpdatePictureBox = (db, ib) =>
                 {
-                    Marshal.Copy(frame.Ptr, buffer, 0, buffer.Length);
-                    bitmap.SetPixels(buffer.SelectMany(d =>
+                    bitmap.SetPixels(db.Zip(ib.Select(index => (SByte)index), (depth, player) =>
                     {
+                        if (depth > _tmpMaxDepth)
+                        {
+                            _tmpMaxDepth = depth;
+                        }
+
+                        var color = ColorMap[player+1];
+
                         return new Byte[]{
-                        (Byte)d
-                        , (Byte)d
-                        , (Byte)d
-                        , (Byte)d
-                    };
-                    }).ToArray());
+                        (Byte)(color.R * depth / MaxDepth)
+                        , (Byte)(color.G * depth / MaxDepth)
+                        , (Byte)(color.B * depth / MaxDepth)
+                        , 255
+                        };
+                    }).SelectMany(pixel => pixel).ToArray());
                     pictureBoxForDepth.Image = bitmap;
                     if (_tmpMaxDepth > MaxDepth)
                     {
                         MaxDepth = _tmpMaxDepth;
                     }
                 };
+
+                var depthImage = _timerEvent
+                    .Where(_ => _sensor.DepthImageStream != null)
+                    .SelectMany(_ => Observable.Using(
+                        ()=>_sensor.DepthImageStream.GetFrame()
+                        , frame=>Observable.Return(frame)
+                     )
+                     .Catch((COMException ex)=>Observable.Return((KinectBaseImageFrame)null))
+                     .Where(frame=>frame!=null)
+                     .Select(frame =>
+                     {
+                         Marshal.Copy(frame.Ptr, buffer, 0, buffer.Length);
+                         return new { Buffer = buffer, Time = frame.Time };
+                     }
+                     ))
+                    ;
+
+                var indexBuffer=new Byte[resolution.Width()*resolution.Height()];
+                var indexImage = _timerEvent
+                    .Where(_ => _sensor.IndexImageStream != null)
+                    .SelectMany(_ => Observable.Using(
+                        () => _sensor.IndexImageStream.GetFrame()
+                            , frame => Observable.Return(frame)
+                                )
+                     .Catch((COMException ex) => Observable.Return((KinectBaseImageFrame)null))
+                     .Where(frame => frame != null)
+                                .Select(frame =>
+                                {
+                                    Marshal.Copy(frame.Ptr, indexBuffer, 0, indexBuffer.Length);
+                                    return new { Buffer = indexBuffer, Time = frame.Time };
+                                }))
+                                ;
+
+                _depthHandler = depthImage.CombineLatest(indexImage,
+                    (l, r) => new { Depth = l, Index = r })
+                    .Where(pair => pair.Depth.Time == pair.Index.Time)
+                    .Subscribe(
+                        pair => UpdatePictureBox(pair.Depth.Buffer, pair.Index.Buffer)
+                        );
+                    ;
             }
             else
             {
                 throw new ArgumentException("apiVersion");
             }
 
-            _depthHandler = _timerEvent
-                .Where(_ => _sensor.DepthImageStream != null)
-                .Subscribe(_ => Observable.Using(
-                    () => _sensor.DepthImageStream.GetFrame()
-                    , frame => Observable.Return(frame)
-                    )
-                    .Where(frame => frame != null)
-                    .Subscribe(
-                        frame => UpdatePictureBox(frame)
-                        , ex => Console.WriteLine("error")
-                    )
-                )
-                ;
         }
         #endregion
 

@@ -56,6 +56,11 @@ namespace UniKinect.Nui
             }
         }
 
+        public override long Time
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         private int _bytesPerPixel;
         public override int BytesPerPixel
         {

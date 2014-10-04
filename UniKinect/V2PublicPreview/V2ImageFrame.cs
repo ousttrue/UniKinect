@@ -18,7 +18,7 @@ namespace UniKinect.V2PublicPreview
         void SetFrame(IColorFrame frame)
         {
             _frame = frame;
-            Time = frame.get_RelativeTime();
+            _time = frame.get_RelativeTime();
             UInt32 capacity;
             _buffer = _frame.AccessRawUnderlyingBuffer(out capacity);
 

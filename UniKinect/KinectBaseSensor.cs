@@ -17,6 +17,11 @@ namespace UniKinect
         public abstract KinectImageResolution DepthImageResolution { get; set; }
         public abstract KinectBaseImageStream DepthImageStream { get; }
 
+        // v2
+        //public abstract IEnumerable<KinectImageResolution> IndexImageResolutions { get; }
+        public abstract KinectImageResolution IndexImageResolution { get; set; }
+        public abstract KinectBaseImageStream IndexImageStream { get; }
+
         // Flag: Has Dispose already been called?
         bool disposed = false;
 

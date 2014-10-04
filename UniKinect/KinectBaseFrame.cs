@@ -44,5 +44,6 @@ namespace UniKinect
         public abstract IntPtr Ptr { get; }
         public abstract Int32 BufferSize { get; }
         public abstract void CopyTo(Byte[] buffer);
+        public abstract Int64 Time { get; }
     }
 }

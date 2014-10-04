@@ -127,6 +127,59 @@ namespace UniKinect.V2PublicPreview
                 _depthImageStream.Dispose();
                 _depthImageStream = null;
             }
+            if (_indexImageStream != null)
+            {
+                _indexImageStream.Dispose();
+                _indexImageStream = null;
+            }
+        }
+        #endregion
+
+        #region IndexImage
+        public override KinectImageResolution IndexImageResolution
+        {
+            get
+            {
+                if (IndexImageStream == null)
+                {
+                    return KinectImageResolution.None;
+                }
+                return IndexImageStream.Resolution;
+            }
+            set
+            {
+                if (IndexImageStream != null && IndexImageStream.Resolution == value)
+                {
+                    return;
+                }
+                CreateIndexImageStream(value);
+            }
+        }
+
+        V2BodyIndexStream _indexImageStream;
+        public override KinectBaseImageStream IndexImageStream
+        {
+            get { return _indexImageStream; }
+        }
+
+        void CreateIndexImageStream(KinectImageResolution resolution)
+        {
+            StopIndexImage();
+            if (resolution == KinectImageResolution.None)
+            {
+                return;
+            }
+
+            _indexImageStream = new V2BodyIndexStream(Sensor);
+        }
+
+        void StopIndexImage()
+        {
+            if (_indexImageStream != null)
+            {
+                _indexImageStream.Dispose();
+                _indexImageStream = null;
+            }
         }
         #endregion
 

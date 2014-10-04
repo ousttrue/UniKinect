@@ -4,10 +4,10 @@ namespace UniKinect.V2PublicPreview
 {
     public abstract class V2BaseImageFrame: KinectBaseImageFrame
     {
-        public Int64 Time
+        protected Int64 _time;
+        public override Int64 Time
         {
-            get;
-            protected set;
+            get { return _time; }
         }
 
         public ColorImageFormat Format
