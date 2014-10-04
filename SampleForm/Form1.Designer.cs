@@ -48,6 +48,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.sensorControl1.Location = new System.Drawing.Point(12, 106);
+            this.sensorControl1.MaxDepth = 1;
             this.sensorControl1.Name = "sensorControl1";
             this.sensorControl1.Sensor = null;
             this.sensorControl1.Size = new System.Drawing.Size(924, 434);
@@ -61,10 +62,8 @@
             this.Controls.Add(this.sensorControl1);
             this.Controls.Add(this.sensors);
             this.Name = "Form1";
-            this.Text = "Form1";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Text = "UniKinectForm";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }

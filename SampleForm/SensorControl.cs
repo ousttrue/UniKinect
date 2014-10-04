@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using UniKinect;
 using System.Reactive.Linq;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 
 namespace SampleForm
 {
-    public partial class SensorControl : UserControl
+    public partial class SensorControl : UserControl, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         Timer _timer = new Timer();
 
         public SensorControl()
@@ -23,10 +21,6 @@ namespace SampleForm
             this.Disposed += (o, args) =>
             {
                 DisposeSensor();
-            };
-            this.Disposed += (o, args) =>
-            {
-                DisposeColorImageHandler();
             };
 
             InitializeComponent();
@@ -40,10 +34,15 @@ namespace SampleForm
             // 30FPS
             _timer.Interval = 33;
             _timer.Start();
+
+            maxDepth.DataBindings.Add("Text", this, "MaxDepth");
         }
 
         void DisposeSensor()
         {
+            DisposeColorImageHandler();
+            DisposeDepthHandler();
+
             if (_sensor == null)
             {
                 return;
@@ -202,10 +201,22 @@ namespace SampleForm
             };
         }
 
-        Int32 MaxDepth
+        Int32 _maxDepth = 1;
+        public Int32 MaxDepth
         {
-            get;
-            set;
+            get { return _maxDepth; }
+            set
+            {
+                if (_maxDepth == value)
+                {
+                    return;
+                }
+                _maxDepth = value;
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("MaxDepth"));
+                }
+            }
         }
 
         void StartDepthHandler(Int32 apiVersion, KinectImageResolution resolution)
@@ -222,13 +233,22 @@ namespace SampleForm
                     bitmap.SetPixels(buffer.SelectMany(d =>
                     {
                         var depth = ((Int32)d) >> 3;
+                        if (depth > _tmpMaxDepth)
+                        {
+                            _tmpMaxDepth = depth;
+                        }
+
+                        var player= ((Int32)d) & 0x7;
+                        var color = ColorMap[player];
+
                         return new Byte[]{
-                        (Byte)depth
-                        , (Byte)depth
-                        , (Byte)depth
-                        , (Byte)depth
+                        (Byte)(color.R * depth / MaxDepth)
+                        , (Byte)(color.G * depth / MaxDepth)
+                        , (Byte)(color.B * depth / MaxDepth)
+                        , 255
                     };
                     }).ToArray());
+
                     pictureBoxForDepth.Image = bitmap;
                     if (_tmpMaxDepth > MaxDepth)
                     {
@@ -277,5 +297,6 @@ namespace SampleForm
                 ;
         }
         #endregion
+
     }
 }
