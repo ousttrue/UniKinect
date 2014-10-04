@@ -23,8 +23,8 @@ namespace UniKinect.Nui
     public static partial class Import
     {
         const String DllPath = @"C:\Windows\System32\Kinect10.dll";
-        public static int SkeletonCount = 6;
-        public static int SkeletonMaxTracked = 2;
+        public const int SkeletonCount = 6;
+        public const int SkeletonMaxTracked = 2;
 
         [DllImport(DllPath, PreserveSig = true)]
         public static extern Int32 NuiInitialize(NuiInitializeFlags dwFlags);
@@ -97,9 +97,8 @@ namespace UniKinect.Nui
 
     // to marshal the data from NuiImageFrame to this struct
     // reference: http://msdn.microsoft.com/en-us/library/nuisensor.inuiframetexture.aspx
-    [Guid("13ea17f5-ff2e-4670-9ee5-1297a6e880d1")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [ComImport()]
+    [ComImport, Guid("13ea17f5-ff2e-4670-9ee5-1297a6e880d1")]
     public interface INuiFrameTexture
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -304,5 +303,159 @@ namespace UniKinect.Nui
         [DllImport(DllPath, PreserveSig = true)]
         public static extern Int32 NuiSkeletonCalculateBoneOrientations(
             ref NuiSkeletonData pSkeletonData, out NuiSkeletonBoneOrientation[] orientations);
+    }
+
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("d3d9ab7b-31ba-44ca-8cc0-d42525bbea43")]
+    public interface INuiSensor
+    {
+        void NuiInitialize(NuiInitializeFlags dwFlags);
+        
+        [PreserveSig]
+        void NuiShutdown();
+        
+        [PreserveSig]
+        void NuiSetFrameEndEvent(IntPtr hEvent, UInt32 dwFrameEventFlag);
+        
+#region ImageStream
+        IntPtr NuiImageStreamOpen(
+            NuiImageType eImageType,
+            NuiImageResolution eResolution,
+            UInt32 dwImageFrameFlags,
+            UInt32 dwFrameLimit,
+            IntPtr hNextFrameEvent);
+        
+        void NuiImageStreamSetImageFrameFlags(IntPtr hStream, UInt32 dwImageFrameFlags);
+        
+        UInt32 NuiImageStreamGetImageFrameFlags(IntPtr hStream);
+        
+        IntPtr NuiImageStreamGetNextFrame(IntPtr hStream, UInt32 dwMillisecondsToWait);
+        
+        void NuiImageStreamReleaseFrame(IntPtr hStream, IntPtr pImageFrame);
+        
+        void NuiImageGetColorPixelCoordinatesFromDepthPixel( 
+            NuiImageResolution eColorResolution,
+            ref NuiImageViewArea pcViewArea,
+            Int32 lDepthX,
+            Int32 lDepthY,
+            UInt16 usDepthValue,
+            out Int32 plColorX,
+            out Int32 plColorY);
+        
+        void NuiImageGetColorPixelCoordinatesFromDepthPixelAtResolution(
+            NuiImageResolution eColorResolution,
+            NuiImageResolution eDepthResolution,
+            ref NuiImageViewArea pcViewArea,
+            Int32 lDepthX,
+            Int32 lDepthY,
+            UInt16 usDepthValue,
+            out Int32 plColorX,
+            out Int32 plColorY);
+        
+        void NuiImageGetColorPixelCoordinateFrameFromDepthPixelFrameAtResolution( 
+            NuiImageResolution eColorResolution,
+            NuiImageResolution eDepthResolution,
+            UInt32 cDepthValues, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=2)]UInt16[] pDepthValues,
+            UInt32 cColorCoordinates, [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=4)]Int32[] pColorCoordinates);
+#endregion
+
+#region Angle
+        void NuiCameraElevationSetAngle(Int32 lAngleDegrees);
+        
+        Int32 NuiCameraElevationGetAngle();
+#endregion
+
+#region Skeleton
+        void NuiSkeletonTrackingEnable(IntPtr hNextFrameEvent, UInt32 dwFlags);
+        
+        void NuiSkeletonTrackingDisable();
+        
+        void NuiSkeletonSetTrackedSkeletons([MarshalAs(UnmanagedType.LPArray, SizeConst=Import.SkeletonMaxTracked)]UInt32[] TrackingIDs);
+        
+        void NuiSkeletonGetNextFrame(UInt32 dwMillisecondsToWait, ref NuiSkeletonFrame pSkeletonFrame);
+        
+        void NuiTransformSmooth(ref NuiSkeletonFrame pSkeletonFrame, ref NuiTransformSmoothParameters pSmoothingParams);
+#endregion
+
+        [return: MarshalAs(UnmanagedType.IUnknown)]
+        /*INuiAudioBeam*/ Object NuiGetAudioSource();
+        
+        [PreserveSig]
+        int NuiInstanceIndex();
+        
+        [PreserveSig]
+        [return: MarshalAs(UnmanagedType.BStr)]
+        String NuiDeviceConnectionId();
+        
+        [PreserveSig]
+        [return: MarshalAs(UnmanagedType.BStr)]
+        String NuiUniqueId();
+        
+        [PreserveSig]
+        [return: MarshalAs(UnmanagedType.BStr)]
+        String NuiAudioArrayId();
+        
+        [PreserveSig]
+        Int32 NuiStatus();
+        
+        [PreserveSig]
+        NuiInitializeFlags NuiInitializationFlags();
+        
+        [return: MarshalAs(UnmanagedType.IUnknown)]
+        /*INuiCoordinateMapper*/ Object NuiGetCoordinateMapper();
+        
+        [return: MarshalAs(UnmanagedType.Interface)]
+        INuiFrameTexture NuiImageFrameGetDepthImagePixelFrameTexture( 
+            IntPtr hStream,
+            ref NuiImageFrame pImageFrame,
+            out Boolean pNearMode
+            );
+        
+        [return: MarshalAs(UnmanagedType.IUnknown)]
+        /*INuiColorCameraSettings*/ Object NuiGetColorCameraSettings();
+        
+        [PreserveSig]
+        Boolean NuiGetForceInfraredEmitterOff();
+        
+        void NuiSetForceInfraredEmitterOff(Boolean fForceInfraredEmitterOff);
+       
+        Vector4 NuiAccelerometerGetCurrentReading();
+        
+#region DepthFilter
+        void NuiSetDepthFilter([MarshalAs(UnmanagedType.IUnknown)]Object pDepthFilter);
+        
+        [return: MarshalAs(UnmanagedType.IUnknown)]
+        Object NuiGetDepthFilter();
+        
+        [return: MarshalAs(UnmanagedType.IUnknown)]
+        Object NuiGetDepthFilterForTimeStamp(Int64 liTimeStamp);
+#endregion
+    }
+
+    public static partial class Import
+    {
+        [DllImport(DllPath)]
+        public static extern Int32 NuiGetSensorCount(out Int32 pCount);
+
+        [DllImport(DllPath)]
+        public static extern Int32 NuiCreateSensorByIndex(
+            Int32 index
+            , [MarshalAs(UnmanagedType.Interface)]out INuiSensor ppSensor);
+
+        [DllImport(DllPath)]
+        public static extern Int32 NuiCreateSensorById(
+            [MarshalAs(UnmanagedType.LPWStr)]String strInstanceId
+            , [MarshalAs(UnmanagedType.Interface)]out INuiSensor ppNuiSensor);
+
+        public delegate void StatusProc(
+            Int32 hrStatus
+            , [MarshalAs(UnmanagedType.LPWStr)]String instanceName
+            , [MarshalAs(UnmanagedType.LPWStr)]String uniqueDeviceName
+            , IntPtr pUserData);
+
+        [DllImport(DllPath)]
+        public static extern void NuiSetDeviceStatusCallback(
+            [MarshalAs(UnmanagedType.FunctionPtr)]StatusProc callback
+            , IntPtr pUserData);
     }
 }

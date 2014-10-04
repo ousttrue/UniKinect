@@ -43,6 +43,7 @@
     <Compile Include="KinectBaseFrame.cs" />
     <Compile Include="KinectBaseSensor.cs" />
     <Compile Include="KinectBaseStream.cs" />
+    <Compile Include="KinectImageResolution.cs" />
     <Compile Include="Nui\KinectImageFrame.cs" />
     <Compile Include="Nui\KinectImageStream.cs" />
     <Compile Include="Nui\KinectSensor.cs" />

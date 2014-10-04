@@ -68,6 +68,13 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SensorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SensorControl.Designer.cs">
+      <DependentUpon>SensorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TimerExtensions.cs" />
     <Compile Include="WaitHandleExtensions.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -81,6 +88,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="SensorControl.resx">
+      <DependentUpon>SensorControl.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

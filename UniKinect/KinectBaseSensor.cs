@@ -4,6 +4,15 @@ namespace UniKinect
 {
     public abstract class KinectBaseSensor: IDisposable
     {
+        public abstract void Initialize();
+        public abstract void Stop();
+
+        public abstract KinectImageResolution ColorImageResolution { get; set; }
+        public abstract KinectBaseImageStream ColorImageStream { get; }
+
+        public abstract KinectImageResolution DepthImageResolution { get; set; }
+        public abstract KinectBaseImageStream DepthImageStream { get; }
+
         // Flag: Has Dispose already been called?
         bool disposed = false;
 

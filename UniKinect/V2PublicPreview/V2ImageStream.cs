@@ -8,16 +8,9 @@ namespace UniKinect.V2PublicPreview
         IColorFrameSource m_source;
         IColorFrameReader m_reader;
 
-        int _width;
-        public override int Width
+        public override KinectImageResolution Resolution
         {
-            get { return _width; }
-        }
-
-        int _height;
-        public override int Height
-        {
-            get { return _height; }
+            get { return KinectImageResolution.Resolution_1920x1080; }
         }
 
         int _bytesPerPixel;
@@ -32,8 +25,8 @@ namespace UniKinect.V2PublicPreview
             m_reader = m_source.OpenReader();
 
             var frameDesc=m_source.get_FrameDescription();
-            _width = frameDesc.get_Width();
-            _height = frameDesc.get_Height();
+            //_width = frameDesc.get_Width();
+            //_height = frameDesc.get_Height();
             _bytesPerPixel=(Int32)frameDesc.get_BytesPerPixel();
         }
 
@@ -69,5 +62,7 @@ namespace UniKinect.V2PublicPreview
             Marshal.ReleaseComObject(m_reader);
             Marshal.ReleaseComObject(m_source);
         }
+
+
     }
 }

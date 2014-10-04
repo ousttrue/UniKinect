@@ -51,8 +51,8 @@ namespace SampleWpf
 
                 // create the bitmap to display
                 _depthSource = new WriteableBitmap(
-                    depthStream.Width,
-                    depthStream.Height,
+                    depthStream.Resolution.Width(),
+                    depthStream.Resolution.Height(),
                     96.0, 96.0, PixelFormats.Gray16, null);
 
                 var depthWaitHandle = new ManualResetEvent(false);

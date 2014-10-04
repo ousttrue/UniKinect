@@ -11,13 +11,6 @@ using UniKinect;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
 using System.Threading;
-#if false
-// V1
-using UniKinect.Nui;
-#else
-// V2
-using UniKinect.V2PublicPreview;
-#endif
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -31,26 +24,32 @@ namespace SampleForm
         public event PropertyChangedEventHandler PropertyChanged;
 
         Font _font = new Font("ＭＳ ゴシック", 12);
+
         KinectBaseSensor _sensor;
+
+        UniKinect.Nui.Import.StatusProc _statusCallback;
 
         public Form1()
         {
             InitializeComponent();
 
-#if false
-            // v1
-            _sensor = new KinectSensor();
+            _statusCallback = (Int32 hrStatus, String instanceName, String uniqueDeviceName, IntPtr pUserData) =>
+            {
+                Console.WriteLine(String.Format("{0}: {1}", instanceName, uniqueDeviceName));
+            };
+            UniKinect.Nui.Import.NuiSetDeviceStatusCallback(_statusCallback, IntPtr.Zero);
 
-            _imageStream = KinectImageStream.CreateImageStream(_imageWaitHandle.Handle);
-            _depthStream = KinectImageStream.CreateDepthSteram(_depthWaitHandle.Handle);
-            _skeletonStream = new KinectSkeletonStream(_skeletonWaitHandle.Handle);
-            dataGridView2.DataSource = _skeletons;
-#else
-            // v2
-            var sensor = new V2Sensor();
-            _sensor = sensor;
+            {
+                Int32 sensorCount;
+                UniKinect.Nui.Import.NuiGetSensorCount(out sensorCount).ThrowIfFail();
+                for (int i = 0; i < sensorCount; ++i)
+                {
+                    var sensor = UniKinect.Nui.KinectSensor.Get(i);
+                    sensors.Items.Add(sensor);
+                }
+            }
 
-           
+            /*
             {
                 var stream = new V2ImageStream(sensor.Sensor);
 
@@ -64,13 +63,11 @@ namespace SampleForm
                 {
                     Marshal.Copy(frame.Buffer, buffer, 0, buffer.Length);
                     bitmap.SetPixels(buffer);
-                    pictureBox1.Image = bitmap;
+                    //pictureBox1.Image = bitmap;
                 };
 
                 StartUpdating(stream, waitHandle, assignFrame);
             }
-
-            /*
             {
                 var stream = new V2DepthStream(sensor.Sensor);
 
@@ -88,7 +85,6 @@ namespace SampleForm
 
                 StartUpdating(stream, waitHandle, assignFrame);
             }
-            */
 
             {
                 var stream = new V2BodyIndexStream(sensor.Sensor);
@@ -103,20 +99,19 @@ namespace SampleForm
                 {
                     Marshal.Copy(frame.Buffer, buffer, 0, buffer.Length);
                     bitmap.SetPixels(buffer);
-                    pictureBox2.Image = bitmap;
+                    //pictureBox2.Image = bitmap;
                 };
 
                 StartUpdating(stream, waitHandle, assignFrame);
             }
-#endif
+            */
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             MaxDepth = 1;
-            maxDepth.DataBindings.Add("Text", this, "MaxDepth");
-
-            colorFps.DataBindings.Add("Text", this, "ColorFps");
+            //maxDepth.DataBindings.Add("Text", this, "MaxDepth");
+            //colorFps.DataBindings.Add("Text", this, "ColorFps");
         }
 
         bool _closing;
@@ -127,20 +122,15 @@ namespace SampleForm
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (_skeletonWaitHandle != null)
+            foreach(KinectBaseSensor sensor in sensors.Items)
             {
-                _skeletonWaitHandle.Dispose();
+                sensor.Dispose();
             }
+        }
 
-            if (_skeletonStream != null)
-            {
-                _skeletonStream.Dispose();
-            }
-
-            if (_sensor != null)
-            {
-                _sensor.Dispose();
-            }
+        private void sensors_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            sensorControl1.Sensor = sensors.SelectedItem as KinectBaseSensor;
         }
 
         void StartUpdating(KinectBaseImageStream stream, WaitHandle waitHandle, Action<KinectBaseImageFrame> assignFrame)
@@ -262,6 +252,7 @@ namespace SampleForm
 
         ManualResetEvent _skeletonWaitHandle;
         KinectBaseStream _skeletonStream;
+
 
         /*
         #region SkeletonStream
