@@ -13,7 +13,7 @@ public class SensorObject : MonoBehaviour {
 
     KinectBaseImageStream _depthStream;
 
-    public Texture2D DepthTexture{ get; set; }
+    public Texture2D DepthTexture;
 
     Int16[] _depth;
 

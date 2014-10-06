@@ -309,31 +309,40 @@ namespace UniKinect.Nui
     [ComImport, Guid("d3d9ab7b-31ba-44ca-8cc0-d42525bbea43")]
     public interface INuiSensor
     {
-        void NuiInitialize(NuiInitializeFlags dwFlags);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiInitialize(NuiInitializeFlags dwFlags);
         
-        [PreserveSig]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[PreserveSig]
         void NuiShutdown();
         
-        [PreserveSig]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[PreserveSig]
         void NuiSetFrameEndEvent(IntPtr hEvent, UInt32 dwFrameEventFlag);
         
 #region ImageStream
-        IntPtr NuiImageStreamOpen(
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		IntPtr NuiImageStreamOpen(
             NuiImageType eImageType,
             NuiImageResolution eResolution,
             UInt32 dwImageFrameFlags,
             UInt32 dwFrameLimit,
             IntPtr hNextFrameEvent);
         
-        void NuiImageStreamSetImageFrameFlags(IntPtr hStream, UInt32 dwImageFrameFlags);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiImageStreamSetImageFrameFlags(IntPtr hStream, UInt32 dwImageFrameFlags);
         
-        UInt32 NuiImageStreamGetImageFrameFlags(IntPtr hStream);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		UInt32 NuiImageStreamGetImageFrameFlags(IntPtr hStream);
         
-        IntPtr NuiImageStreamGetNextFrame(IntPtr hStream, UInt32 dwMillisecondsToWait);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		IntPtr NuiImageStreamGetNextFrame(IntPtr hStream, UInt32 dwMillisecondsToWait);
         
-        void NuiImageStreamReleaseFrame(IntPtr hStream, IntPtr pImageFrame);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiImageStreamReleaseFrame(IntPtr hStream, IntPtr pImageFrame);
         
-        void NuiImageGetColorPixelCoordinatesFromDepthPixel( 
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiImageGetColorPixelCoordinatesFromDepthPixel( 
             NuiImageResolution eColorResolution,
             ref NuiImageViewArea pcViewArea,
             Int32 lDepthX,
@@ -342,7 +351,8 @@ namespace UniKinect.Nui
             out Int32 plColorX,
             out Int32 plColorY);
         
-        void NuiImageGetColorPixelCoordinatesFromDepthPixelAtResolution(
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiImageGetColorPixelCoordinatesFromDepthPixelAtResolution(
             NuiImageResolution eColorResolution,
             NuiImageResolution eDepthResolution,
             ref NuiImageViewArea pcViewArea,
@@ -352,7 +362,8 @@ namespace UniKinect.Nui
             out Int32 plColorX,
             out Int32 plColorY);
         
-        void NuiImageGetColorPixelCoordinateFrameFromDepthPixelFrameAtResolution( 
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiImageGetColorPixelCoordinateFrameFromDepthPixelFrameAtResolution( 
             NuiImageResolution eColorResolution,
             NuiImageResolution eDepthResolution,
             UInt32 cDepthValues, [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=2)]UInt16[] pDepthValues,
@@ -360,74 +371,97 @@ namespace UniKinect.Nui
 #endregion
 
 #region Angle
-        void NuiCameraElevationSetAngle(Int32 lAngleDegrees);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiCameraElevationSetAngle(Int32 lAngleDegrees);
         
-        Int32 NuiCameraElevationGetAngle();
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		Int32 NuiCameraElevationGetAngle();
 #endregion
 
 #region Skeleton
-        void NuiSkeletonTrackingEnable(IntPtr hNextFrameEvent, UInt32 dwFlags);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiSkeletonTrackingEnable(IntPtr hNextFrameEvent, UInt32 dwFlags);
         
-        void NuiSkeletonTrackingDisable();
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiSkeletonTrackingDisable();
         
-        void NuiSkeletonSetTrackedSkeletons([MarshalAs(UnmanagedType.LPArray, SizeConst=Import.SkeletonMaxTracked)]UInt32[] TrackingIDs);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiSkeletonSetTrackedSkeletons([MarshalAs(UnmanagedType.LPArray, SizeConst=Import.SkeletonMaxTracked)]UInt32[] TrackingIDs);
         
-        void NuiSkeletonGetNextFrame(UInt32 dwMillisecondsToWait, ref NuiSkeletonFrame pSkeletonFrame);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiSkeletonGetNextFrame(UInt32 dwMillisecondsToWait, ref NuiSkeletonFrame pSkeletonFrame);
         
-        void NuiTransformSmooth(ref NuiSkeletonFrame pSkeletonFrame, ref NuiTransformSmoothParameters pSmoothingParams);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiTransformSmooth(ref NuiSkeletonFrame pSkeletonFrame, ref NuiTransformSmoothParameters pSmoothingParams);
 #endregion
 
-        [return: MarshalAs(UnmanagedType.IUnknown)]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[return: MarshalAs(UnmanagedType.IUnknown)]
         /*INuiAudioBeam*/ Object NuiGetAudioSource();
         
-        [PreserveSig]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[PreserveSig]
         int NuiInstanceIndex();
-        
+    
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         [PreserveSig]
         [return: MarshalAs(UnmanagedType.BStr)]
         String NuiDeviceConnectionId();
         
-        [PreserveSig]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[PreserveSig]
         [return: MarshalAs(UnmanagedType.BStr)]
         String NuiUniqueId();
         
-        [PreserveSig]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[PreserveSig]
         [return: MarshalAs(UnmanagedType.BStr)]
         String NuiAudioArrayId();
         
-        [PreserveSig]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[PreserveSig]
         Int32 NuiStatus();
         
-        [PreserveSig]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[PreserveSig]
         NuiInitializeFlags NuiInitializationFlags();
         
-        [return: MarshalAs(UnmanagedType.IUnknown)]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[return: MarshalAs(UnmanagedType.IUnknown)]
         /*INuiCoordinateMapper*/ Object NuiGetCoordinateMapper();
         
-        [return: MarshalAs(UnmanagedType.Interface)]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[return: MarshalAs(UnmanagedType.Interface)]
         INuiFrameTexture NuiImageFrameGetDepthImagePixelFrameTexture( 
             IntPtr hStream,
             ref NuiImageFrame pImageFrame,
             out Boolean pNearMode
             );
         
-        [return: MarshalAs(UnmanagedType.IUnknown)]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[return: MarshalAs(UnmanagedType.IUnknown)]
         /*INuiColorCameraSettings*/ Object NuiGetColorCameraSettings();
         
-        [PreserveSig]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[PreserveSig]
         Boolean NuiGetForceInfraredEmitterOff();
         
-        void NuiSetForceInfraredEmitterOff(Boolean fForceInfraredEmitterOff);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiSetForceInfraredEmitterOff(Boolean fForceInfraredEmitterOff);
        
-        Vector4 NuiAccelerometerGetCurrentReading();
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		Vector4 NuiAccelerometerGetCurrentReading();
         
 #region DepthFilter
-        void NuiSetDepthFilter([MarshalAs(UnmanagedType.IUnknown)]Object pDepthFilter);
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void NuiSetDepthFilter([MarshalAs(UnmanagedType.IUnknown)]Object pDepthFilter);
         
-        [return: MarshalAs(UnmanagedType.IUnknown)]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[return: MarshalAs(UnmanagedType.IUnknown)]
         Object NuiGetDepthFilter();
         
-        [return: MarshalAs(UnmanagedType.IUnknown)]
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[return: MarshalAs(UnmanagedType.IUnknown)]
         Object NuiGetDepthFilterForTimeStamp(Int64 liTimeStamp);
 #endregion
     }
