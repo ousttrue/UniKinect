@@ -241,6 +241,7 @@ namespace UniKinect.V2PublicPreview
         {
             Stop();
             System.Runtime.InteropServices.Marshal.ReleaseComObject(_sensor);
+            _sensor = null;
         }
     }
 }

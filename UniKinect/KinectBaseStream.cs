@@ -18,7 +18,7 @@ namespace UniKinect
         // Public implementation of Dispose pattern callable by consumers.
         public void Dispose()
         {
-            Console.WriteLine("Dispose");
+            Console.WriteLine(String.Format("{0}: Dispose", this));
 
             Dispose(true);
             GC.SuppressFinalize(this);

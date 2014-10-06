@@ -164,9 +164,12 @@ namespace UniKinect.Nui
         private KinectSensor(INuiSensor sensor)
         {
             _sensor = sensor;
+            if (sensor == null)
+            {
+                int a = 0;
+            }
             Id = _sensor.NuiDeviceConnectionId();
-
-            Console.WriteLine(sensor.NuiStatus());
+            //Console.WriteLine(sensor.NuiStatus());
         }
 
         public override string ToString()

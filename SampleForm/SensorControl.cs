@@ -39,7 +39,7 @@ namespace SampleForm
             maxDepth.DataBindings.Add("Text", this, "MaxDepth");
         }
 
-        void DisposeSensor()
+        void StopSensor()
         {
             DisposeColorImageHandler();
             DisposeDepthHandler();
@@ -48,9 +48,20 @@ namespace SampleForm
             {
                 return;
             }
-            _sensor.Dispose();
+            _sensor.Stop();
             _sensor = null;
         }
+
+        void DisposeSensor()
+        {
+            StopSensor();
+
+            if (_sensor == null)
+            {
+                return;
+            }
+            _sensor.Dispose();
+        }        
         
         KinectBaseSensor _sensor;
         public KinectBaseSensor Sensor
@@ -63,9 +74,13 @@ namespace SampleForm
                     return;
                 }
 
-                DisposeSensor();
+                StopSensor();
 
                 _sensor = value;
+                if (_sensor == null)
+                {
+                    return;
+                }
                 colorImageResolutions.DataSource = _sensor.ColorImageResolutions;
                 depthResolutions.DataSource = _sensor.DepthImageResolutions;
                 _sensor.Initialize();
@@ -125,10 +140,10 @@ namespace SampleForm
                     () => _sensor.ColorImageStream.GetFrame()
                     , frame => Observable.Return(frame)
                     )
-                    .Where(frame => frame!=null)
+                    .Where(frame => frame != null)
                     .Subscribe(
                         frame => UpdatePictureBox(frame)
-                        , ex => Console.WriteLine("error")
+                        , ex => { } // Console.WriteLine("error")
                     )
                 )
                 ;
@@ -269,7 +284,7 @@ namespace SampleForm
                         .Where(frame => frame != null)
                         .Subscribe(
                             frame => UpdatePictureBox(frame)
-                            , ex => Console.WriteLine("error")
+                            , ex => {}　// Console.WriteLine("error")
                         )
                     )
                     ;

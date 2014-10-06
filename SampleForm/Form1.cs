@@ -35,6 +35,14 @@ namespace SampleForm
                     sensors.Items.Add(sensor);
                 }
             }
+            catch(EntryPointNotFoundException){
+                // ?
+                var sensor = UniKinect.V2PublicPreview.V2Sensor.GetDefault();
+                if (sensor != null)
+                {
+                    sensors.Items.Add(sensor);
+                }
+            }
             catch(DllNotFoundException)
             {
                 // not installed
@@ -43,10 +51,12 @@ namespace SampleForm
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
+            sensorControl1.Sensor = null;
             foreach(KinectBaseSensor sensor in sensors.Items)
             {
                 sensor.Dispose();
             }
+            sensors.Items.Clear();
         }
 
         private void sensors_SelectedIndexChanged(object sender, EventArgs e)
