@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Linq;
+using KinectSDK20;
 
 namespace UniKinect.V2PublicPreview
 {
@@ -11,7 +12,11 @@ namespace UniKinect.V2PublicPreview
 
         public Int64 Time
         {
-            get { return _frame.get_RelativeTime(); }
+            get
+            {
+                _frame.get_RelativeTime(out long relativeTime).ThrowIfFailed();
+                return relativeTime;
+            }
         }
 
         public V2Body[] Bodies
@@ -25,18 +30,10 @@ namespace UniKinect.V2PublicPreview
             _frame = frame;
             _initialized = true;
 
-            var bodies=new Bodies();
-            _frame.GetAndRefreshBodyData(6, ref bodies);
+            var bodies = new IBody[6];
+            _frame.GetAndRefreshBodyData(6, out bodies[0]);
 
-            Bodies = new V2Body[]{
-                new V2Body(bodies._0),
-                new V2Body(bodies._1),
-                new V2Body(bodies._2),
-                new V2Body(bodies._3),
-                new V2Body(bodies._4),
-                new V2Body(bodies._5),
-            };
-            //Bodies = Enumerable.Range(0, 6).Select(i => new V2Body(Marshal.ReadIntPtr(p, i))).ToArray();
+            Bodies = bodies.Select(x => new V2Body(x)).ToArray();
         }
 
         // Flag: Has Dispose already been called?
@@ -64,7 +61,7 @@ namespace UniKinect.V2PublicPreview
                     {
                         body.Dispose();
                     }
-                    Marshal.ReleaseComObject(_frame);
+                    _frame?.Dispose();
                 }
             }
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using KinectSDK20;
 
 namespace UniKinect.V2PublicPreview
 {
@@ -22,33 +22,37 @@ namespace UniKinect.V2PublicPreview
         public V2DepthStream(IKinectSensor sensor)
             : base(10000000)
         {
-            var source = sensor.get_DepthFrameSource();
-            m_reader = source.OpenReader();
+            sensor.get_DepthFrameSource(out IDepthFrameSource source).ThrowIfFailed();
+            source.OpenReader(out m_reader).ThrowIfFailed();
 
-            var frameDesc=source.get_FrameDescription();
-            _width = frameDesc.get_Width();
-            _height = frameDesc.get_Height();
+            source.get_FrameDescription(out IFrameDescription frameDesc).ThrowIfFailed();
+            frameDesc.get_Width(out _width).ThrowIfFailed();
+            frameDesc.get_Height(out _height).ThrowIfFailed();
         }
 
         public IntPtr CreateWaitHandle()
         {
-            return m_reader.SubscribeFrameArrived();
+            m_reader.SubscribeFrameArrived(out long value).ThrowIfFailed();
+            return new IntPtr(value);
         }
 
         public override KinectBaseImageFrame GetFrame()
         {
+            IDepthFrame frame = null;
             try
             {
-                var frame = new V2DepthFrame(m_reader.AcquireLatestFrame());
-                if (!NewTimeStamp(frame.Time))
+                m_reader.AcquireLatestFrame(out frame).ThrowIfFailed();
+                frame.get_RelativeTime(out long relativeTime).ThrowIfFailed();
+                if (!NewTimeStamp(relativeTime))
                 {
+                    frame.Dispose();
                     return null;
                 }
-                return frame;
+                return new V2DepthFrame(frame);
             }
-            catch (COMException ex)
+            catch (KinectSDK20.ComException ex)
             {
-                if ((UInt32)ex.ErrorCode == 0x8000000A)
+                if ((UInt32)ex.HR == 0x8000000A)
                 {
 
                 }
@@ -56,13 +60,17 @@ namespace UniKinect.V2PublicPreview
                 {
                     Console.WriteLine(ex);
                 }
+                if (frame)
+                {
+                    frame.Dispose();
+                }
                 return null;
             }
         }
 
         protected override void OnDispose()
         {
-            Marshal.ReleaseComObject(m_reader);
+            m_reader?.Dispose();
         }
     }
 }

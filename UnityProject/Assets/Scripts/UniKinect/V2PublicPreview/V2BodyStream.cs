@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using KinectSDK20;
 
 namespace UniKinect.V2PublicPreview
 {
@@ -10,24 +10,26 @@ namespace UniKinect.V2PublicPreview
         public V2BodyStream(IKinectSensor sensor)
             : base(10000000)
         {
-            var source = sensor.get_BodyFrameSource();
-            m_reader = source.OpenReader();
+            sensor.get_BodyFrameSource(out IBodyFrameSource source).ThrowIfFailed();
+            source.OpenReader(out m_reader).ThrowIfFailed();
         }
 
         public V2BodyFrame GetFrame()
         {
+            m_reader.AcquireLatestFrame(out IBodyFrame frame).ThrowIfFailed();
             try
             {
-                var frame = new V2BodyFrame(m_reader.AcquireLatestFrame());
-                if (!NewTimeStamp(frame.Time))
+                frame.get_RelativeTime(out long relativeTime).ThrowIfFailed();
+                if (!NewTimeStamp(relativeTime))
                 {
+                    frame.Dispose();
                     return null;
                 }
-                return frame;
+                return new V2BodyFrame(frame);
             }
-            catch (COMException ex)
+            catch (KinectSDK20.ComException ex)
             {
-                if ((UInt32)ex.ErrorCode == 0x8000000A)
+                if ((UInt32)ex.HR == 0x8000000A)
                 {
 
                 }
@@ -35,13 +37,17 @@ namespace UniKinect.V2PublicPreview
                 {
                     Console.WriteLine(ex);
                 }
+                if (frame)
+                {
+                    frame.Dispose();
+                }
                 return null;
             }
         }
 
         protected override void OnDispose()
         {
-            Marshal.ReleaseComObject(m_reader);
+            m_reader?.Dispose();
         }
     }
 }

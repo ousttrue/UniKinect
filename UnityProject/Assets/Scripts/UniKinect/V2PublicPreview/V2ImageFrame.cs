@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using KinectSDK20;
 
 namespace UniKinect.V2PublicPreview
 {
@@ -15,9 +16,13 @@ namespace UniKinect.V2PublicPreview
             private set;
         }
 
-        public ColorImageFormat Format
+        public _ColorImageFormat Format
         {
-            get { return _frame.get_RawColorImageFormat(); }
+            get
+            {
+                _frame.get_RawColorImageFormat(out _ColorImageFormat format).ThrowIfFailed();
+                return format;
+            }
         }
 
         UInt32 _bufferSize;
@@ -29,7 +34,7 @@ namespace UniKinect.V2PublicPreview
         IntPtr _buffer;
         public override IntPtr Buffer
         {
-            get{ return _buffer; }
+            get { return _buffer; }
         }
 
         public override int Pitch
@@ -39,38 +44,50 @@ namespace UniKinect.V2PublicPreview
 
         public UInt32 BytesPerPixel
         {
-            get { return _description.get_BytesPerPixel(); }
+            get
+            {
+                _description.get_BytesPerPixel(out uint value).ThrowIfFailed();
+                return value;
+            }
         }
 
         public override Int32 Width
         {
-            get { return _description.get_Width(); }
+            get
+            {
+                _description.get_Width(out int value).ThrowIfFailed();
+                return value;
+            }
         }
 
         public override Int32 Height
         {
-            get { return _description.get_Height(); }
+            get
+            {
+                _description.get_Height(out int value).ThrowIfFailed();
+                return value;
+            }
         }
-
 
         public V2ImageFrame(IColorFrame frame)
         {
             _frame = frame;
-            _description = frame.get_FrameDescription();
-            Time = frame.get_RelativeTime();
-            _buffer = _frame.AccessRawUnderlyingBuffer(out _bufferSize);
+            frame.get_FrameDescription(out _description).ThrowIfFailed();
+            frame.get_RelativeTime(out long time).ThrowIfFailed();
+            Time = time;
+            _frame.AccessRawUnderlyingBuffer(out _bufferSize, out _buffer);
         }
 
-        public void CopyConvertedFrameDataToArray(Int32 length, IntPtr data)
+        public void CopyConvertedFrameDataToArray(uint length, out byte data)
         {
-            _frame.CopyConvertedFrameDataToArray(length, data, ColorImageFormat.ColorImageFormat_Bgra);
+            _frame.CopyConvertedFrameDataToArray(length, out data, _ColorImageFormat._Bgra).ThrowIfFailed();
         }
 
         protected override void OnDispose()
         {
             // Free any other managed objects here.
-            Marshal.ReleaseComObject(_description);
-            Marshal.ReleaseComObject(_frame);
+            _description?.Dispose();
+            _frame?.Dispose();
         }
     }
 }

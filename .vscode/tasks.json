@@ -1,0 +1,36 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "generate kinect",
+            "type": "shell",
+            "command": "${workspaceFolder}/external/regenerator/regenerator.exe",
+            "args": [
+                "lua/cs_kinect_v2.lua",
+                "${env:KINECTSDK20_DIR}/inc",
+                "${workspaceFolder}/UnityProject/Assets/Scripts/KinectSDK20",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/external/regenerator",
+                "env": {
+                    "PATH": "C:\\Program Files\\LLVM\\bin;${env:PATH}"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build regenerator",
+            "type": "shell",
+            "command": "dub",
+            "args": [
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/external/regenerator"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

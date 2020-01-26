@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using KinectSDK20;
 
 namespace UniKinect.V2PublicPreview
 {
-    public class V2Body: IDisposable
+    public class V2Body : IDisposable
     {
         IBody _body;
         Boolean _initialized;
@@ -13,14 +13,15 @@ namespace UniKinect.V2PublicPreview
             get;
             private set;
         }
-       
+
         public V2Body(IBody body)
         {
             _body = body;
             //_body = (IBody)Marshal. GetObjectForIUnknown(p);
             _initialized = true;
 
-            IsTracked=_body.get_IsTracked();
+            _body.get_IsTracked(out byte isTracked).ThrowIfFailed();
+            IsTracked = isTracked != 0;
         }
 
         // Flag: Has Dispose already been called?
@@ -44,7 +45,7 @@ namespace UniKinect.V2PublicPreview
                 if (_initialized)
                 {
                     // Free any other managed objects here.
-                    Marshal.ReleaseComObject(_body);
+                    _body?.Dispose();
                 }
             }
 

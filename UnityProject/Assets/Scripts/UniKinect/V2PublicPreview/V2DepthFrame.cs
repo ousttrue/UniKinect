@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using KinectSDK20;
 
 namespace UniKinect.V2PublicPreview
 {
     public class V2DepthFrame : KinectBaseImageFrame
     {
-        Boolean _initialized=false;
-
         IDepthFrame _frame;
 
         IFrameDescription _description;
@@ -31,39 +29,50 @@ namespace UniKinect.V2PublicPreview
 
         public override int Pitch
         {
-            get { return (int)(BufferSize/Height); }
+            get { return (int)(BufferSize / Height); }
         }
 
         public UInt32 BytesPerPixel
         {
-            get { return _description.get_BytesPerPixel(); }
+            get
+            {
+                _description.get_BytesPerPixel(out uint value).ThrowIfFailed();
+                return value;
+            }
         }
 
         public override Int32 Width
         {
-            get { return _description.get_Width(); }
+            get
+            {
+                _description.get_Width(out int value).ThrowIfFailed();
+                return value;
+            }
         }
 
         public override Int32 Height
         {
-            get { return _description.get_Height(); }
+            get
+            {
+                _description.get_Height(out int value).ThrowIfFailed();
+                return value;
+            }
         }
-
 
         public V2DepthFrame(IDepthFrame frame)
         {
             _frame = frame;
-            _initialized = true;
-            _description = frame.get_FrameDescription();
-            Time = frame.get_RelativeTime();
-            _buffer = _frame.AccessUnderlyingBuffer(out _bufferSize);
+            frame.get_FrameDescription(out _description).ThrowIfFailed();
+            frame.get_RelativeTime(out long time).ThrowIfFailed();
+            Time = time;
+            _frame.AccessUnderlyingBuffer(out _bufferSize, out _buffer).ThrowIfFailed();
         }
 
         protected override void OnDispose()
         {
             // Free any other managed objects here.
-            Marshal.ReleaseComObject(_description);
-            Marshal.ReleaseComObject(_frame);
+            _description?.Dispose();
+            _frame?.Dispose();
         }
     }
 }

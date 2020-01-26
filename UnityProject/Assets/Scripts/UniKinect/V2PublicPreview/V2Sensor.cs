@@ -1,4 +1,6 @@
 ﻿
+using KinectSDK20;
+
 namespace UniKinect.V2PublicPreview
 {
     public class V2Sensor : KinectBaseSensor
@@ -8,14 +10,13 @@ namespace UniKinect.V2PublicPreview
 
         public V2Sensor()
         {
-            Import.GetDefaultKinectSensor(out _sensor).ThrowIfFail();
-
-            _sensor.Open();
+            kinect.GetDefaultKinectSensor(out _sensor).ThrowIfFailed();
+            _sensor.Open().ThrowIfFailed();
         }
 
         protected override void OnDispose()
         {
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(_sensor);
+            _sensor?.Dispose();
         }
     }
 }

@@ -1,14 +1,11 @@
 ﻿using UnityEngine;
-using System.Collections;
-using UniKinect.V2PublicPreview;
-using UniKinect;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using UniKinect;
 
-
-public class SensorObject : MonoBehaviour {
-
+public class SensorObject : MonoBehaviour
+{
     KinectBaseSensor _sensor;
 
     KinectBaseImageStream _depthStream;
@@ -17,17 +14,19 @@ public class SensorObject : MonoBehaviour {
 
     Int16[] _depth;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
+    // Use this for initialization
+    void Start()
+    {
 
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         if (_sensor == null)
         {
-            var sensor = new V2Sensor();
-            _depthStream = new V2DepthStream(sensor.Sensor);
+            var sensor = new UniKinect.V2PublicPreview.V2Sensor();
+            _depthStream = new UniKinect.V2PublicPreview.V2DepthStream(sensor.Sensor);
             _sensor = sensor;
         }
 
@@ -61,8 +60,8 @@ public class SensorObject : MonoBehaviour {
             DepthTexture.SetPixels32(pixel32s);
             DepthTexture.Apply();
         }
-	
-	}
+
+    }
 
     void OnApplicationQuit()
     {
