@@ -30,7 +30,7 @@ public class UniKinectDepth : MonoBehaviour {
             return;
         }
 
-        renderer.material.mainTexture = Kinect.DepthTexture;
+        GetComponent<Renderer>().material.mainTexture = Kinect.DepthTexture;
         _initialized = true;
 	}
 }

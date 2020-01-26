@@ -3,4 +3,5 @@ bin
 debug
 release
 obj
-packages
+/packages/
+/.vs/
