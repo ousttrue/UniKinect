@@ -1,75 +1,89 @@
 ﻿using UnityEngine;
 using System;
-using System.Linq;
 using System.Runtime.InteropServices;
-using UniKinect;
+using KinectSDK20;
 
 public class SensorObject : MonoBehaviour
 {
-    KinectBaseSensor _sensor;
-
-    KinectBaseImageStream _depthStream;
-
+    IKinectSensor _sensor;
+    IDepthFrameReader _reader;
+    Int32 _width;
+    Int32 _height;
+    long _lastTime;
     public Texture2D DepthTexture;
-
     Int16[] _depth;
+    Color32[] _colors;
 
-    // Use this for initialization
-    void Start()
-    {
-
-    }
+    public bool CopyTexture = true;
 
     // Update is called once per frame
     void Update()
     {
         if (_sensor == null)
         {
-            var sensor = new UniKinect.V2PublicPreview.V2Sensor();
-            _depthStream = new UniKinect.V2PublicPreview.V2DepthStream(sensor.Sensor);
-            _sensor = sensor;
+            kinect.GetDefaultKinectSensor(out _sensor).ThrowIfFailed();
+            _sensor.Open().ThrowIfFailed();
+
+            _sensor.get_DepthFrameSource(out IDepthFrameSource source).ThrowIfFailed();
+            source.OpenReader(out _reader).ThrowIfFailed();
+
+            source.get_FrameDescription(out IFrameDescription frameDesc).ThrowIfFailed();
+            using (frameDesc)
+            {
+                frameDesc.get_Width(out _width).ThrowIfFailed();
+                frameDesc.get_Height(out _height).ThrowIfFailed();
+            }
         }
 
-        using (var frame = _depthStream.GetFrame())
+        var hr = _reader.AcquireLatestFrame(out IDepthFrame frame);
+        if (hr != 0)
         {
-            if (frame == null)
+            return;
+        }
+
+        using (frame)
+        {
+            frame.get_RelativeTime(out long relativeTime).ThrowIfFailed();
+            if (relativeTime == _lastTime)
             {
                 return;
             }
+            _lastTime = relativeTime;
 
             if (DepthTexture == null)
             {
                 DepthTexture = new Texture2D(
-                    _depthStream.Width, _depthStream.Height, TextureFormat.ARGB32, false);
-
+                    _width, _height, TextureFormat.ARGB32, false);
                 DepthTexture.filterMode = FilterMode.Point;
-
-                _depth = new Int16[_depthStream.Width * _depthStream.Height];
+                var length = _width * _height;
+                _depth = new Int16[length];
+                _colors = new Color32[length];
             }
 
-            Marshal.Copy(frame.Buffer, _depth, 0, _depth.Length);
-
-            var pixel32s = _depth.Select((Int16 d) =>
+            if (!CopyTexture)
             {
+                return;
+            }
+
+            frame.AccessUnderlyingBuffer(out uint bufferSize, out IntPtr buffer).ThrowIfFailed();
+            Marshal.Copy(buffer, _depth, 0, _depth.Length);
+            for (int i = 0; i < _depth.Length; ++i)
+            {
+                var d = _depth[i];
                 var b = (Byte)(UInt16)d;
-                return new Color32(
+                _colors[i] =
+                new Color32(
                     b, b, b, 255
                 );
-            }).ToArray();
-            //Debug.Log(pixel32s.Length);
-            DepthTexture.SetPixels32(pixel32s);
+            }
+            DepthTexture.SetPixels32(_colors);
             DepthTexture.Apply();
         }
-
     }
 
     void OnApplicationQuit()
     {
-        if (_sensor != null)
-        {
-            _sensor.Dispose();
-            _sensor = null;
-        }
+        _reader?.Dispose();
+        _sensor?.Dispose();
     }
-
 }
