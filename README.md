@@ -1,8 +1,8 @@
 UniKinect
 =========
 
-Kinect for Unity
+Kinect for Unity.
 
-http://wiki.etc.cmu.edu/unity3d/index.php/Microsoft_Kinect_-_Microsoft_SDK
+[Kinect for Windows SDK 2.0](https://docs.microsoft.com/en-us/previous-versions/windows/kinect/dn799271(v=ieb.10))
 
-をベースに作成した。
+Generated from `C:/Program Files/Microsoft SDKs/Kinect/v2.0_1409/inc` by [regenerator](https://github.com/ousttrue/regenerator)
