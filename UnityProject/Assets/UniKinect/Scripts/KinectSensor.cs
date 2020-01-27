@@ -3,7 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using KinectSDK20;
 
-public class SensorObject : MonoBehaviour
+public class KinectSensor : MonoBehaviour
 {
     IKinectSensor _sensor;
     IDepthFrameReader _reader;
